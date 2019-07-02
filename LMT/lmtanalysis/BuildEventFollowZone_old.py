@@ -69,7 +69,7 @@ def reBuildEvent( connection, tmin=None, tmax=None ):
     
     for idAnimalB in pool.animalDictionnary.keys():
         print(pool.animalDictionnary[idAnimalB])
-        meanSizeB = pool.animalDictionnary[idAnimalB].getMeanBodyLength( tmax = tmax )
+        meanSizeB = pool.animalDictionnary[idAnimalB].getMeanBodyLength(tmax = tmax)
         
         for idAnimalA in pool.animalDictionnary.keys():
             if( idAnimalB == idAnimalA ):
@@ -173,5 +173,3 @@ def reBuildEvent( connection, tmin=None, tmax=None ):
 
            
     print( "Rebuild event finished." )
-        
-    

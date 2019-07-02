@@ -16,7 +16,7 @@ def disableEventTimeLineCache():
     print( "Cache event is disabled" )
     
     
-def EventTimeLineCached( connection, file, eventName, idA=None, idB=None, idC=None, idD = None, minFrame=None, maxFrame=None, loadEventWithoutOverlapCheck=False ):
+def EventTimeLineCached(connection, file, eventName, idA=None, idB=None, idC=None, idD = None, minFrame=None, maxFrame=None, loadEventWithoutOverlapCheck=False ):
             
     global eventCacheDico_
     

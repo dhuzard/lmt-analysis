@@ -16,61 +16,52 @@ from affine import Affine
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
-def flush( connection ):
+
+def flush(connection):
     ''' flush event in database '''
-    deleteEventTimeLineInBase(connection, "Floor sniffing" )
+    deleteEventTimeLineInBase(connection, "Floor sniffing")
 
 
-def reBuildEvent( connection, tmin, tmax , pool = None ): 
-    '''
+def reBuildEvent(connection, tmin, tmax, pool=None):
+    """
     Event Floor sniffing:
     - the animal is sniffing the floor
-    '''
-    
-    pool = AnimalPool( )
-    pool.loadAnimals( connection )
-    pool.loadDetection( start = tmin, end = tmax )
-    
+    """
+
+    pool = AnimalPool()
+    pool.loadAnimals(connection)
+    pool.loadDetection(start=tmin, end=tmax)
+
     for idAnimalA in pool.animalDictionnary.keys():
         print(pool.animalDictionnary[idAnimalA])
-        
+
         eventName = "Floor sniffing"
-        print ( "A sniffs the floor")        
-        print ( eventName )
-                
-        trainTimeLine = EventTimeLine( None, eventName , idAnimalA , None , None , None , loadEvent=False )
-                
-        result={}
-        
+        print("A sniffs the floor")
+        print(eventName)
+
+        trainTimeLine = EventTimeLine(None, eventName, idAnimalA, None, None, None, loadEvent=False)
+
+        result = {}
+
         animalA = pool.animalDictionnary[idAnimalA]
-        #print ( animalA )
+        # print ( animalA )
         dicA = animalA.detectionDictionnary
-            
+
         for t in dicA.keys():
-            if (animalA.getBodySlope(t) == None):
+            if animalA.getBodySlope(t) is None:
                 continue
-            
-            if (animalA.getBodySlope(t) >= -25 and animalA.getBodySlope(t) <= -15):
-                #print("floor sniffing")
+
+            if -25 <= animalA.getBodySlope(t) <= -15:  # TODO: Adapt those body slopes to each individual ? or define in measures.py
+                # print("floor sniffing")
                 result[t] = True
-                
-        
-        trainTimeLine.reBuildWithDictionnary( result )
-                
+
+        trainTimeLine.reBuildWithDictionnary(result)
+
         trainTimeLine.endRebuildEventTimeLine(connection)
-    
-        
+
     # log process
     from lmtanalysis.TaskLogger import TaskLogger
-    t = TaskLogger( connection )
-    t.addLog( "Build Event Floor sniffing" , tmin=tmin, tmax=tmax )
+    t = TaskLogger(connection)
+    t.addLog("Build Event Floor sniffing", tmin=tmin, tmax=tmax)
 
-    print( "Rebuild event finished." )
-        
-        
-        
-        
-        
-        
-        
-    
+    print("Rebuild Floor Sniffing event finished.")
