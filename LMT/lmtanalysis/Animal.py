@@ -703,9 +703,14 @@ class Animal:
 
         numberOfDetections = self.getNumberOfDetection(tmin, tmax)
 
-        return meanBodySize, medianBodySize, meanBodyHeight, medianBodyHeight, meanBodySlope, medianBodySlope, \
-               meanFrontZ,meanSpeed, medianSpeed, meanVerticalSpeed, medianVerticalSpeed, bodyThreshold, \
-               massHeightThreshold, numberOfDetections
+        listOfNames = ["meanBodySize", "medianBodySize", "meanBodyHeight", "medianBodyHeight", "meanBodySlope",
+                       "medianBodySlope", "meanFrontZ", "meanSpeed", "medianSpeed", "meanVerticalSpeed",
+                       "medianVerticalSpeed", "bodyThreshold", "massHeightThreshold", "numberOfDetections"]
+        listOfMeasures = [meanBodySize, medianBodySize, meanBodyHeight, medianBodyHeight, meanBodySlope, medianBodySlope, \
+                          meanFrontZ, meanSpeed, medianSpeed, meanVerticalSpeed, medianVerticalSpeed, bodyThreshold, \
+                          massHeightThreshold, numberOfDetections]
+
+        return listOfMeasures
 
     def getThresholdMassHeight(self, tmin=0, tmax=None):
         """

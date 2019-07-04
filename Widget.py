@@ -1,8 +1,8 @@
-'''
+"""
 Created on 20 May 2019
 
 @author: Dax
-'''
+"""
 
 import pandas as pd
 import numpy as np
@@ -29,7 +29,7 @@ from IPython.core.display import HTML
 
 # ********** DEFINE FUNCTIONS ********************************************************
 
-# TODO: OFFRIF CHIRURGIE ESTHETIQUE A LOLO
+# TODO: OFFRIR CHIRURGIE ESTHETIQUE A LOLO
 
 def getAllEvents(file):
     print("Loading events...")
@@ -53,18 +53,9 @@ def printBold(txt, color="black"):
 #     """ Check if the animal is involved in the current query """
 #     for k in animalWidget:
 #         id = getAnimalBaseIdFromWidget(animalWidget[k].value)
-#         if (id == animal.baseId):
+#         if id == animal.baseId:
 #             return True
 #     return False
-
-
-def isInvolved(animal):
-    """ Check if the animal is involved in the current query """
-    for k in animalWidget:
-        id = getAnimalBaseIdFromWidget(animalWidget[k].value)
-        if id == animal.baseId:
-            return True
-    return False
 
 
 def getAnimalIdFromString(value):
