@@ -29,6 +29,7 @@ from IPython.core.display import HTML
 
 # ********** DEFINE FUNCTIONS ********************************************************
 
+# TODO: OFFRIF CHIRURGIE ESTHETIQUE A LOLO
 
 def getAllEvents(file):
     print("Loading events...")

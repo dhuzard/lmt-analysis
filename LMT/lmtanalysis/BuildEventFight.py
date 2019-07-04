@@ -15,10 +15,10 @@ from lmtanalysis.Event import *
 from lmtanalysis.Measure import *
 from lmtanalysis.EventTimeLineCache import EventTimeLineCached
 
-from LMT.lmtanalysis.Animal import AnimalPool
-from LMT.lmtanalysis.Detection import Detection
-from LMT.lmtanalysis.Event import EventTimeLine, Event, deleteEventTimeLineInBase
-from LMT.lmtanalysis.Measure import oneSecond, MAX_DISTANCE_THRESHOLD
+from lmtanalysis.Animal import AnimalPool
+from lmtanalysis.Detection import Detection
+from lmtanalysis.Event import EventTimeLine, Event, deleteEventTimeLineInBase
+from lmtanalysis.Measure import oneSecond, MAX_DISTANCE_THRESHOLD
 
 
 def flush(connection):
