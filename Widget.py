@@ -2,6 +2,12 @@
 Created on 20 May 2019
 
 @author: Dax
+
+Creates a Widget to allow choosing the Event (behaviors from LMT) and the timebins and displays results:
+- Time of events
+- Histogram
+- duration
+- trace of animals during event
 """
 
 import pandas as pd
@@ -27,10 +33,8 @@ import ipywidgets as widgets
 from IPython.display import display
 from IPython.core.display import HTML
 
+
 # ********** DEFINE FUNCTIONS ********************************************************
-
-# TODO: OFFRIR CHIRURGIE ESTHETIQUE A LOLO
-
 def getAllEvents(file):
     print("Loading events...")
     connection = sqlite3.connect(file)
@@ -76,7 +80,7 @@ def getAnimalBaseIdFromWidget(value):
     return None
 
 
-def click_me():  # Event handler = Start when button is clicked
+def click_choice():  # Event handler = Starts when "choice" button is clicked
     actionChoice.configure(text="Clicked !!")
     clickLabel.configure(foreground='red', text='Analysis started...')
     print("The event chosen is = ", eventChosen.get())
@@ -85,46 +89,33 @@ def click_me():  # Event handler = Start when button is clicked
     print("Mouse C chosen = ", mouseCChosen.get())
     print("Mouse D chosen = ", mouseDChosen.get())
 
-    """
-    if startFrameWidget.get() is None:
-        minFrame = 0
-    else:
-        minFrame = int(startFrameWidget.get())*30
-
-    if stopFrameWidget.get() is None:
-        maxFrame = animalPool.getMaxDetectionT()
-    else:
-        maxFrame = int(stopFrameWidget.get())*30
-    """
-
-    if len(startFrameWidget.get()) == 0:
-        minFrame = 0
-    else:
-        minFrame = int(startFrameWidget.get()) * 30
-
-    if len(stopFrameWidget.get()) == 0:
-        maxFrame = 6 * oneDay
-    else:
-        maxFrame = int(stopFrameWidget.get()) * 30
-
-    print("Start Time is: ", minFrame/30, " seconds => ", minFrame, " frames")
-    print("Stop Time is: ", maxFrame/30, " seconds => ", maxFrame, " frames")
-
     idA = getAnimalIdFromString(mouseAChosen.get())
     idB = getAnimalIdFromString(mouseBChosen.get())
     idC = getAnimalIdFromString(mouseCChosen.get())
     idD = getAnimalIdFromString(mouseDChosen.get())
 
-    print("idA number: ", idA)
-    print("idB number: ", idB)
-    print("idC number: ", idC)
-    print("idD number: ", idD)
+    print("ID mouse A number: ", idA)
+    print("ID mouse B number: ", idB)
+    print("ID mouse C number: ", idC)
+    print("ID mouse D number: ", idD)
+
+    if len(startFrameWidget.get()) == 0:  # If no startFrame entered, start = 0.
+        minFrame = 0
+    else:
+        minFrame = int(startFrameWidget.get()) * 30  # StartFrame in frames (30fps)
+
+    if len(stopFrameWidget.get()) == 0:  # If no stopFrame entered, stop = 6 days.
+        maxFrame = 6 * oneDay
+    else:
+        maxFrame = int(stopFrameWidget.get()) * 30  # stopFrame in frames (30fps)
+
+    print("Start Time is: ", minFrame/30, " seconds => ", minFrame, " frames")
+    print("Stop Time is: ", maxFrame/30, " seconds => ", maxFrame, " frames")
 
     """ Do EventTimeLine for the specified timebins """
-
-    if len(timebinWidget.get()) == 0: # if not timebin is entered
+    if len(timebinWidget.get()) == 0:  # If no timebin is entered
         timebin = 0
-        print("No time bin entered!")
+        print("No timebin entered!")
         timebinNumber = 1
 
         print("Number of time bins: ", timebinNumber)
@@ -145,7 +136,7 @@ def click_me():  # Event handler = Start when button is clicked
 
         for event in eventTimeLine1.eventList:
             data.append([event.startFrame, event.endFrame, event.duration(), event.duration() / 30])
-            # print( event.startFrame, event.endFrame, event.duration() )
+            # print(event.startFrame, event.endFrame, event.duration())
 
         df = pd.DataFrame(data=np.array(data), columns=["Start frame", "End frame",
                                                         "Duration (in frames)", "Duration (in seconds)"])
@@ -171,7 +162,7 @@ def click_me():  # Event handler = Start when button is clicked
         if idD is not None:
             animalPool.getAnimalsDictionnary()[idD].plotTrajectory(show=True, title="Animal D, ", color="orange")
 
-    else:
+    else:  # If some timebins are entered
         timebin = int(timebinWidget.get())*30
         print("The timebin is: ", timebin / 30, " seconds => ", timebin, " frames")
         timebinNumber = int((maxFrame-minFrame)/timebin)
@@ -185,7 +176,6 @@ def click_me():  # Event handler = Start when button is clicked
 
             startBin = minFrame + i * timebin
             stopBin = minFrame + timebin + i * timebin
-
             print("Start frame is: ", startBin)
             print("Stop frame is: ", stopBin)
 
@@ -193,10 +183,6 @@ def click_me():  # Event handler = Start when button is clicked
                                              idA=idA, idB=idB, idC=idC, idD=idD,
                                              minFrame=startBin,
                                              maxFrame=stopBin)
-
-            # eventTimeLine = EventTimeLine(connection, eventChosen.get(),
-            #                              idA=idA, idB=idB, idC=idC, idD=idD,
-            #                             minFrame=minFrame, maxFrame=maxFrame)
 
             print("eventTimeLine: ", eventTimeLine[i])
 
@@ -214,14 +200,14 @@ def click_me():  # Event handler = Start when button is clicked
                                                             "Duration (in frames)", "Duration (in seconds)"])
             print(df)
 
+            print("Plots the distribution (bars) of Event duration")
             eventTimeLine[i].plotEventDurationDistributionBar()
-            print("Distribution of duration of events: Plotted.")
 
+            print("Plots the distribution (histogram) of Event duration.")
             eventTimeLine[i].plotEventDurationDistributionHist()
-            print("Distribution of duration of events in bins: Plotted.")
 
+            print("Plots the Timeline of events.")
             eventTimeLine[i].plotTimeLine()
-            print("Timeline of events: Plotted.")
 
             # Show location of events
             animalPool.loadDetection(start=minFrame, end=maxFrame)
@@ -245,6 +231,15 @@ def click_me():  # Event handler = Start when button is clicked
                 animalPool.getAnimalsDictionnary()[idC].plotTrajectory(show=True, title="Animal C, ", color="green")
             if idD is not None:
                 animalPool.getAnimalsDictionnary()[idD].plotTrajectory(show=True, title="Animal D, ", color="orange")
+
+    clickLabel.configure(foreground='green', text='Analysis completed !')
+
+
+def click_export():
+    """
+    Exports the selected data (Event, Animals, time bins) in .csv files.
+    :return: .csv files
+    """
 
 
 # ********** Select file / Prepare Animals **************
@@ -340,12 +335,17 @@ ttk.Label(widget, text="Timebin (in seconds):").grid(row=7, column=0)
 timebinWidget = ttk.Entry(widget)
 timebinWidget.grid(row=7, column=1)
 
-# Widget: Choice/validation button
+# Widget: Button 1: Choice/validation => compute graphs
 clickLabel = ttk.Label(widget, text="Click to validate =>")
 clickLabel.grid(row=8, column=0)
-actionChoice = ttk.Button(widget, text="Validate choice", command=click_me)
+actionChoice = ttk.Button(widget, text="Validate choice", command=click_choice)
 actionChoice.grid(row=8, column=1)
 
+# Widget: Button 2: Export data
+clickLabel = ttk.Label(widget, text="Click to export data =>")
+clickLabel.grid(row=9, column=0)
+actionChoice = ttk.Button(widget, text="Export", command=click_export)
+actionChoice.grid(row=9, column=1)
 # ***** Start WIDGET GUI **********
 widget.mainloop()
 # **********************************

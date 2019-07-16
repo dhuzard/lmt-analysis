@@ -152,7 +152,8 @@ class Animal:
 
     def filterDetectionByArea(self, x1, y1, x2, y2):
         """
-        Filter detection in the cage (using centimeter, starting from the top left of the cage )
+        Filters the detection in the cage (using centimeter, starting from the top left of the cage).
+        The scaleFactor (cm => pixel) = 10/57 (in measures.py) => 1 pixel = 0.175 cm
         """
         nbRemoved = 0
         for key in sorted(self.detectionDictionnary.keys()):
@@ -161,13 +162,12 @@ class Animal:
             if a is None:
                 continue
 
-            x = (a.massX - cornerCoordinates50x50Area[0][0]) * scaleFactor
-            y = (a.massY - cornerCoordinates50x50Area[0][1]) * scaleFactor
+            x = (a.massX - cornerCoordinates50x50Area[0][0]) * scaleFactor  # X coordinate from top-left corner (114)
+            y = (a.massY - cornerCoordinates50x50Area[0][1]) * scaleFactor  # Y coordinate from top-left corner (63)
 
-            if x < x1 or x > x2 or y < y1 or y > y2:
+            if x < x1 or x > x2 or y < y1 or y > y2:  # Checks that (X,Y) coordinates are within the zone
                 self.detectionDictionnary.pop(key)
                 nbRemoved += 1
-
         print("Filtering area, number of detection removed:", nbRemoved)
 
     def filterDetectionByEventTimeLine(self, eventTimeLine):
@@ -677,38 +677,70 @@ class Animal:
             detection.append(a)
             bodySizeList.append(a.getBodySize())
             massZHeightList.append(a.massZ)
+            # massZHeightList = [x for x in massZHeightList if x != 0.0]  # Removes the 0 from the list
             frontZList.append(a.frontZ)
+            # massZHeightList = [x for x in massZHeightList if x != 0.0]  # Removes the 0 from the list
             bodySlopeList.append(a.getBodySlope())
             rearingList.append(a.isRearing())
             rearingZList.append(a.isRearingZ())
             speed.append(self.getSpeed(key))
             verticalSpeed.append(self.getVerticalSpeed(key))
 
-        # print("start computing means and medians")
+        # Computing means, medians, min and max for each measure
+        # bodySizeList = [x for x in bodySizeList if x != 0.0]  # Removes the 0 from the list
+        minBodySize = np.nanmin(np.array(bodySizeList))
         meanBodySize = np.nanmean(np.array(bodySizeList))
         medianBodySize = np.nanmedian(np.array(bodySizeList))
+        maxBodySize = np.nanmax(np.array(bodySizeList))
+
+        minBodyHeight = np.nanmin(np.array(massZHeightList))
         meanBodyHeight = np.nanmean(np.array(massZHeightList))
         medianBodyHeight = np.nanmedian(np.array(massZHeightList))
+        maxBodyHeight = np.nanmax(np.array(massZHeightList))
+
+        minBodySlope = np.nanmin(np.array(list(filter(None, bodySlopeList))))
         meanBodySlope = np.nanmean(np.array(list(filter(None, bodySlopeList))))
         medianBodySlope = np.nanmedian(np.array(list(filter(None, bodySlopeList))))
+        maxBodySlope = np.nanmax(np.array(list(filter(None, bodySlopeList))))
+
+        minFrontZ = np.nanmin(np.array(frontZList))
         meanFrontZ = np.nanmedian(np.array(frontZList))
+        medianFrontZ = np.nanmedian(np.array(frontZList))
+        maxFrontZ = np.nanmax(np.array(frontZList))
+
+        minSpeed = np.nanmin(np.array(np.array(list(filter(None, speed)))))
         meanSpeed = np.nanmean(np.array(np.array(list(filter(None, speed)))))
         medianSpeed = np.nanmedian(np.array(np.array(list(filter(None, speed)))))
+        maxSpeed = np.nanmax(np.array(np.array(list(filter(None, speed)))))
+
+        minVerticalSpeed = np.nanmin(np.array((list(filter(None, verticalSpeed)))))
         meanVerticalSpeed = np.nanmean(np.array((list(filter(None, verticalSpeed)))))
         medianVerticalSpeed = np.nanmedian(np.array((list(filter(None, verticalSpeed)))))
-        bodyThreshold = np.nanmean(bodySizeList) + np.nanstd(bodySizeList)
+        maxVerticalSpeed = np.nanmax(np.array((list(filter(None, verticalSpeed)))))
+
+        minBodyThreshold = np.nanmin(bodySizeList) + np.nanstd(bodySizeList)
+        meanBodyThreshold = np.nanmean(bodySizeList) + np.nanstd(bodySizeList)
+        medianBodyThreshold = np.nanmedian(bodySizeList) + np.nanstd(bodySizeList)
+        maxBodyThreshold = np.nanmax(bodySizeList) + np.nanstd(bodySizeList)
 
         decile = 7 * len(massZHeightList) / 10
         massHeightThreshold = sorted(massZHeightList)[math.ceil(decile) - 1]
 
         numberOfDetections = self.getNumberOfDetection(tmin, tmax)
 
-        listOfNames = ["meanBodySize", "medianBodySize", "meanBodyHeight", "medianBodyHeight", "meanBodySlope",
+        listOfNames = ["minBodySize", "meanBodySize", "medianBodySize", "minBodySize", "meanBodyHeight", "medianBodyHeight", "meanBodySlope",
                        "medianBodySlope", "meanFrontZ", "meanSpeed", "medianSpeed", "meanVerticalSpeed",
                        "medianVerticalSpeed", "bodyThreshold", "massHeightThreshold", "numberOfDetections"]
-        listOfMeasures = [meanBodySize, medianBodySize, meanBodyHeight, medianBodyHeight, meanBodySlope, medianBodySlope, \
-                          meanFrontZ, meanSpeed, medianSpeed, meanVerticalSpeed, medianVerticalSpeed, bodyThreshold, \
-                          massHeightThreshold, numberOfDetections]
+        listOfMeasures = [minBodySize, meanBodySize, medianBodySize, maxBodySize,
+                          minBodyHeight, meanBodyHeight, medianBodyHeight, maxBodyHeight,
+                          minBodySlope, meanBodySlope, medianBodySlope, maxBodySlope,
+                          minFrontZ, meanFrontZ, medianFrontZ, maxFrontZ,
+                          minSpeed, meanSpeed, medianSpeed, maxSpeed,
+                          minVerticalSpeed, meanVerticalSpeed, medianVerticalSpeed, maxVerticalSpeed,
+                          minBodyThreshold, meanBodyThreshold, medianBodyThreshold, maxBodyThreshold,
+                          massHeightThreshold,
+                          numberOfDetections
+                          ]
 
         return listOfMeasures
 
@@ -781,7 +813,7 @@ class Animal:
 
     def getSpeed(self, t):
         """
-        Calculates the instantaneous speed of the animal at each frame "t"
+        Calculates the instantaneous speed of the animal at each frame 't'
         """
         a = self.detectionDictionnary.get(t - 1)
         b = self.detectionDictionnary.get(t + 1)
@@ -790,7 +822,6 @@ class Animal:
             return None
 
         speed = math.hypot(a.massX - b.massX, a.massY - b.massY) * scaleFactor / (2 / 30)
-
         return speed
 
     def getVerticalSpeed(self, t):
@@ -804,7 +835,6 @@ class Animal:
             return None
 
         verticalSpeed = (b.massZ - a.massZ) / 2
-
         return verticalSpeed
 
     """ PREVIOUS VERSION FROM FABRICE (With bodyThreshold in Self!)
@@ -1129,7 +1159,10 @@ class AnimalPool:
             self.animalDictionnary[animal].filterDetectionByInstantSpeed(minSpeed, maxSpeed)
 
     def filterDetectionByArea(self, x1, y1, x2, y2):
-        """ Filters the detection for all the animals of the Animals Dictionnary """
+        """
+        Filters the detection for all the animals of the Animals Dictionnary
+        => in centimeters !
+        """
         for animal in self.animalDictionnary.keys():
             self.animalDictionnary[animal].filterDetectionByArea(x1, y1, x2, y2)
 

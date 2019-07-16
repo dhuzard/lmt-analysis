@@ -24,7 +24,7 @@ def flush( connection ):
 
 def reBuildEvent(connection, file, tmin=None, tmax=None, pool = None ):
     """ use the pool provided or create it """
-    if ( pool == None ):
+    if pool is None:
         pool = AnimalPool( )
         pool.loadAnimals( connection )
         pool.loadDetection( start = tmin, end = tmax )

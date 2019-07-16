@@ -52,7 +52,7 @@ def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
                                                                      maxFrame=tmax)
             # fait une matrice de toutes les aproches à deux possibles
 
-   for idAnimalA in range(1 , pool.getNbAnimals()+1 ):
+    for idAnimalA in range(1 , pool.getNbAnimals()+1 ):
        for idAnimalB in range(1 , pool.getNbAnimals()+1 ):
            if idAnimalA == idAnimalB:
                continue
@@ -83,9 +83,9 @@ def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
 
            appContactTimeLine.endRebuildEventTimeLine(connection)
 
-   # log process
-   from lmtanalysis.TaskLogger import TaskLogger
-   t = TaskLogger( connection )
-   t.addLog("Build Event Approach Contact", tmin=tmin, tmax=tmax)
+    # log process
+    from lmtanalysis.TaskLogger import TaskLogger
+    t = TaskLogger( connection )
+    t.addLog("Build Event Approach Contact", tmin=tmin, tmax=tmax)
 
-   print("Rebuild event finished.")
+    print("Rebuild event finished.")

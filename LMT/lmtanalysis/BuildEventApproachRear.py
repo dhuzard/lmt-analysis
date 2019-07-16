@@ -15,20 +15,20 @@ from lmtanalysis.Event import *
 from lmtanalysis.Measure import *
 from lmtanalysis.EventTimeLineCache import EventTimeLineCached
 
-from LMT.lmtanalysis.Measure import TIME_WINDOW_BEFORE_EVENT
+from lmtanalysis.Measure import TIME_WINDOW_BEFORE_EVENT
 
 
 def flush( connection ):
-    ''' flush event in database '''
+    """ flush event in database """
     deleteEventTimeLineInBase(connection, "Approach rear")
 
 
 def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
-    '''
+    """
     Animal A is approaching the animal B, that is in a reared posture at the end of the approach of animal A.
     Social approaches are considered, meaning that the two animals are within 2 body lengths of one another.
     Rearings are considered "in contact" given that the computation is done on the last second of an approach.
-    '''
+    """
 
     #pool = AnimalPool( )
     #pool.loadAnimals( connection )

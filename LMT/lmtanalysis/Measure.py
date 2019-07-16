@@ -8,9 +8,10 @@ from lmtanalysis.Point import Point
 """ 
 Factor to convert distances from pixels to cm:
 Dax: 1 pixel = 10/57 = 0.17543859649 cm ?
+X axis: 1 pxl = 0.1761 cm / Y axis: 1 pxl = 0.1724 cm
 and 1 cm = 5.7 pixels
 """
-scaleFactor = 10/57
+scaleFactor = 10/57  # 0.1754
 
 """ Speed Thresholds (in cm/s) """
 SPEED_THRESHOLD_LOW = 5
@@ -42,7 +43,7 @@ MAX_DISTANCE_HEAD_HEAD_GENITAL_THRESHOLD = 15
 
 """ Conversions frames => seconds (30fps) """
 oneFrame = 1
-oneSecond = 30
+oneSecond = 30  # 30fps
 oneMinute = 30*60
 oneHour = 30*60*60
 oneDay = 30*60*60*24
@@ -51,19 +52,27 @@ oneWeek = 30*60*60*24*7
 """ time window at the end of an event to test overlap with another event (0.5 second) """
 TIME_WINDOW_BEFORE_EVENT = 15*oneFrame
 
-""" Cage center in 50x50cm area """
+""" Cage center point in 50x50cm area """
 cageCenterCoordinates50x50Area = Point(256, 208)
 
+""" Cage center zone in 50x50cm area """
+cageCenterZone50x50Area = [
+                          (185, 135.5),
+                          (327, 135.5),
+                          (327, 280.5),
+                          (185, 280.5)
+                          ]
+
 """ 
-Corner Coordinates in 50x50cm area 
+Corner Coordinates (in pixels) in the 50x50cm area:
 A = (114,63), B = (398,63), C = (398,353), D = (114,353)
 """
 cornerCoordinates50x50Area = [
-                        (114, 63),
-                        (398, 63),
-                        (398, 353),
-                        (114, 353)
-                        ]
+                             (114, 63),
+                             (398, 63),
+                             (398, 353),
+                             (114, 353)
+                             ]
 
 
 def second(s):
