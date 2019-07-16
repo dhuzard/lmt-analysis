@@ -240,7 +240,7 @@ def click_export():
     Exports the selected data (Event, Animals, time bins) in .csv files.
     :return: .csv files
     """
-
+    # TODO: Export the csv of the selected data
 
 # ********** Select file / Prepare Animals **************
 files = getFilesToProcess() #ask for database to process

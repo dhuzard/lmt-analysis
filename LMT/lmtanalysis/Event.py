@@ -25,7 +25,7 @@ class Event:
         self.startFrame = startFrame
         self.endFrame = endFrame
 
-    def duration(self):
+    def duration(self):  # Duration in frames
         return self.endFrame - self.startFrame + 1
 
     def contain(self, frameNumber):
@@ -189,7 +189,7 @@ class EventTimeLine:
                     return
 
                 for t in range(minFrame, maxFrame + 1):
-                    if (t in eventBool):
+                    if t in eventBool:
                         eventBool.pop(t)
                     else:
                         eventBool[t] = True
@@ -428,41 +428,41 @@ class EventTimeLine:
         return frameDico
 
     def reBuildWithDictionnary(self, eventBool):
-        self.eventList.clear()
-        keyList = sorted(eventBool.keys())
+        self.eventList.clear()  # Starts with empty eventList
+        keyList = sorted(eventBool.keys())  # Key list of the event
 
         start = -1
-        for key in keyList:
+        for key in keyList:  # for all events in the list
             if start == -1:
-                start = key
+                start = key  # Sets the Start of an event
 
-            if eventBool.get(key + 1) is None:
-                self.eventList.append(Event(start, key))
+            if eventBool.get(key + 1) is None:  # the next key is not part of the event
+                self.eventList.append(Event(start, key))  # Set the end of the event
                 start = -1
 
     def checkEventHole(self, frameNumber):
-        '''
+        """
         Checks if an event end at a givenFrame, and if another one starts just after. Merge event if found.
         XXX
           T
            XXX
            ==> merge
-        '''
+        """
         eventA = self.getEventAt(frameNumber)
         eventB = self.getEventAt(frameNumber + 1)
-        if (eventA == None or eventB == None):
+        if eventA is None or eventB is None:
             return
-        if (eventA != eventB):
+        if eventA != eventB:
             self.mergeEvent(eventA, eventB)
 
     def mergeCloseEvents(self, numberOfFrameBetweenEvent):
-        '''
+        """
         Merges events if they are distant of less or equal than numberOfFrame
-        '''
+        """
         minT = self.getMinT()
         maxT = self.getMaxT()
 
-        if (self.getNbEvent() == 0):
+        if self.getNbEvent() == 0:
             print("No event in timeLine")
             return
 
@@ -489,17 +489,17 @@ class EventTimeLine:
         self.reBuildWithDictionnary(eventDictionnary)
 
     def mergeEvent(self, eventA, eventB):
-        '''
-        if events are next to another, merge it. (test A before B and B before A )
-        '''
-        if (eventA.endFrame == eventB.startFrame - 1):
+        """
+        If events are next to each other, merge them. (test A before B and B before A )
+        """
+        if eventA.endFrame == eventB.startFrame - 1:
             mergedEvent = Event(eventA.startFrame, eventB.endFrame)
             self.eventList.remove(eventA)
             self.eventList.remove(eventB)
             self.eventList.append(mergedEvent)
             return
 
-        if (eventB.endFrame == eventA.startFrame - 1):
+        if eventB.endFrame == eventA.startFrame - 1:
             mergedEvent = Event(eventB.startFrame, eventA.endFrame)
             self.eventList.remove(eventA)
             self.eventList.remove(eventB)
@@ -529,18 +529,18 @@ class EventTimeLine:
 
     def removeEventsOverT(self, maxT):
         for event in self.eventList[:]:
-            if (event.startFrame > maxT):
+            if event.startFrame > maxT:
                 self.eventList.remove(event)
 
     def removeEventsBelowT(self, maxT):
         for event in self.eventList[:]:
-            if (event.endFrame < maxT):
+            if event.endFrame < maxT:
                 self.eventList.remove(event)
 
     def keepOnlyEventCommonWithTimeLine(self, timeLineAnd):
-        '''
-        perform a AND logic with timeLineAnd
-        '''
+        """
+        Performs a AND logic with the timeline 'timeLineAnd'
+        """
         dico = self.getDictionnary()
         andDico = timeLineAnd.getDictionnary()
         andResult = {}
@@ -552,9 +552,9 @@ class EventTimeLine:
         self.reBuildWithDictionnary(andResult)
 
     def removeEventOfTimeLine(self, timeLineToRemove):
-        '''
-        remove events that match timeLineToRemove
-        '''
+        """
+        Removes the events that match the timeline 'timeLineToRemove'
+        """
         dico = self.getDictionnary()
         removeDico = timeLineToRemove.getDictionnary()
 
@@ -564,8 +564,11 @@ class EventTimeLine:
         self.reBuildWithDictionnary(dico)
 
     def removeEventsBelowLength(self, maxLen):
+        """
+        Removes events shorter that 'maxLen'
+        """
         for event in self.eventList[:]:
-            if (event.duration() < maxLen):
+            if event.duration() < maxLen:
                 self.eventList.remove(event)
 
     def printEventList(self):
@@ -578,7 +581,7 @@ class EventTimeLine:
     def getMaxT(self):
         maxT = None
         for event in self.eventList:
-            if maxT == None:
+            if maxT is None:
                 maxT = event.endFrame
             maxT = max(maxT, event.endFrame)
         return maxT
@@ -586,31 +589,30 @@ class EventTimeLine:
     def getMinT(self):
         minT = None
         for event in self.eventList:
-            if minT == None:
+            if minT is None:
                 minT = event.startFrame
             minT = min(minT, event.startFrame)
         return minT
 
     def getNbEvent(self):
         nb = 0
-        for event in self.eventList:
-            nb = nb + 1
+        for _ in self.eventList:
+            nb += 1
         return nb
 
     def getMeanEventLength(self):
         nb = 0
         sum = 0
         for event in self.eventList:
-            nb = nb + 1
+            nb += 1
             sum += event.duration()
 
-        if (nb == 0):
+        if nb == 0:
             return None
         else:
             return sum / nb
 
-    def getStandardDEviationEventLength(self):
-        sd = 0
+    def getStandardDeviationEventLength(self):
         durationList = []
         for event in self.eventList:
             durationList.append(event.duration())
@@ -644,13 +646,13 @@ class EventTimeLine:
         plt.figure()
         # ax = plt.subplots()
         plt.hist(data, nbBin)
-        plt.xlabel("Event duration")
+        plt.xlabel("Event duration (in frames)")
         plt.ylabel("Number of events")
 
         if title is not None:
             plt.title(title)
         else:
-            plt.title(". Hist. of duration of event: {}".format(self.eventName))
+            plt.title(". Hist. of duration of the event: {}".format(self.eventName))
 
         plt.figtext(.5, .85, "Number of bin: {}".format(nbBin), fontsize=10, ha='center')
         plt.show()
@@ -676,7 +678,7 @@ class EventTimeLine:
         # plt.bar( 3,11,1 )
 
         plt.xlabel("Events (sorted by duration)")
-        plt.ylabel("Duration")
+        plt.ylabel("Duration (in frames)")
 
         if title is not None:
             plt.title(title)

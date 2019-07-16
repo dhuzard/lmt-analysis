@@ -33,11 +33,11 @@ from lmtanalysis.EventTimeLineCache import EventTimeLineCached
 ''' minT and maxT to process the analysis (in frame) '''
 minT = 0
 maxT = 6*oneDay
-#maxT = (6+1)*oneHour
+# maxT = (6+1)*oneHour
 
 ''' time window to compute the events. '''
 windowT = 1*oneDay
-#windowT = 3*oneDay #int (0.5*oneDay)
+# windowT = 3*oneDay #int (0.5*oneDay)
 
 USE_CACHE_LOAD_DETECTION_CACHE = True
 
@@ -76,7 +76,8 @@ eventClassList = [
                 BuildEventNest3,
                 BuildEventNest4,
                 BuildEventFight,
-                BuildEventCenterPeripheryLocation
+                BuildEventCenterPeripheryLocation,
+                BuildEventCenterPeriphNWNESWSE
                 ]
 
 '''

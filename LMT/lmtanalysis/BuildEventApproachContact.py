@@ -18,11 +18,10 @@ from lmtanalysis.EventTimeLineCache import EventTimeLineCached
 
 def flush(connection):
     """ flush event in database """
-    deleteEventTimeLineInBase(connection, "Approach contact" )
+    deleteEventTimeLineInBase(connection, "Approach contact")
 
 
 def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
-    
     # pool = AnimalPool( )
     # pool.loadAnimals( connection )
     # pool.loadDetection( start=tmin, end=tmax)
@@ -31,12 +30,12 @@ def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
         pool = AnimalPool()
         pool.loadAnimals(connection)
         pool.loadDetection(start=tmin, end=tmax, lightLoad=True)
-        
+
     contactDicoDico = {}
     approachDico = {}
 
-    for idAnimalA in range(1, pool.getNbAnimals()+1):
-        for idAnimalB in range(1, pool.getNbAnimals()+1):
+    for idAnimalA in range(1, pool.getNbAnimals() + 1):
+        for idAnimalB in range(1, pool.getNbAnimals() + 1):
             if idAnimalA == idAnimalB:
                 continue
 
@@ -50,42 +49,44 @@ def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
             approachDico[idAnimalA, idAnimalB] = EventTimeLineCached(connection, file, "Social approach",
                                                                      idAnimalA, idAnimalB, minFrame=tmin,
                                                                      maxFrame=tmax)
-            # fait une matrice de toutes les aproches à deux possibles
+            # fait une matrice de toutes les approches à deux possibles
 
-    for idAnimalA in range(1 , pool.getNbAnimals()+1 ):
-       for idAnimalB in range(1 , pool.getNbAnimals()+1 ):
-           if idAnimalA == idAnimalB:
-               continue
+    for idAnimalA in range(1, pool.getNbAnimals() + 1):
+        for idAnimalB in range(1, pool.getNbAnimals() + 1):
+            if idAnimalA == idAnimalB:
+                continue
 
-           eventName = "Approach contact"
-           print(eventName)
+            eventName = "Approach contact"
+            print(eventName)
 
-           appContactTimeLine = EventTimeLine(None, eventName, idAnimalA, idAnimalB, None, None, loadEvent=False)
+            appContactTimeLine = EventTimeLine(None, eventName, idAnimalA, idAnimalB, None, None, loadEvent=False)
 
-           for eventApp in approachDico[idAnimalA, idAnimalB].eventList:
+            for eventApp in approachDico[idAnimalA, idAnimalB].eventList:
 
-               ''' new code: '''
+                ''' new code: '''
 
-               for t in range(eventApp.endFrame - TIME_WINDOW_BEFORE_EVENT, eventApp.endFrame + TIME_WINDOW_BEFORE_EVENT+1):
+                for t in range(eventApp.endFrame - TIME_WINDOW_BEFORE_EVENT,
+                               eventApp.endFrame + TIME_WINDOW_BEFORE_EVENT + 1):
 
-                   if t in contactDicoDico[idAnimalA, idAnimalB]:
-                       appContactTimeLine.eventList.append(eventApp)
-                       break
+                    if t in contactDicoDico[idAnimalA, idAnimalB]:
+                        appContactTimeLine.eventList.append(eventApp)
+                        break
 
-               ''' old code(slow)
+                """ old code(slow)
                
-               bug: est ce que ca n aurait pas du etre eventContact.startFrame ? ou eventApp.endFrame-TIME_WINDOW_BEFORE_EVENT, eventApp.endFrame+TIME_WINDOW_BEFORE_EVENT ?
+               bug: est ce que ca n'aurait pas du etre eventContact.startFrame ? 
+               ou eventApp.endFrame-TIME_WINDOW_BEFORE_EVENT, eventApp.endFrame+TIME_WINDOW_BEFORE_EVENT ?
                
                for eventContact in contactDicoDico[idAnimalA, idAnimalB].eventList:
                    if (eventApp.overlapInT(eventContact.endFrame-TIME_WINDOW_BEFORE_EVENT, eventContact.endFrame+TIME_WINDOW_BEFORE_EVENT) == True):
                        appContactTimeLine.eventList.append(eventApp)
-               '''
+               """
 
-           appContactTimeLine.endRebuildEventTimeLine(connection)
+            appContactTimeLine.endRebuildEventTimeLine(connection)
 
     # log process
     from lmtanalysis.TaskLogger import TaskLogger
-    t = TaskLogger( connection )
+    t = TaskLogger(connection)
     t.addLog("Build Event Approach Contact", tmin=tmin, tmax=tmax)
 
     print("Rebuild event finished.")

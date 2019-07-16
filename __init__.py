@@ -37,11 +37,11 @@ if __name__ == '__main__':
         """
 
         # *********SORTING BY SPEED***********
-        animalPool.loadDetection(start=0, end=oneMinute * 5)
+        animalPool.loadDetection(start=0, end=oneHour)
 
         # filter detection by animalSpeed: 0-5cm/s
-        animalPool.filterDetectionByInstantSpeed(0, 5)
-        #animalPool.plotTrajectory(title="Trajectories filtered by speed (0-5cm/s)")
+        animalPool.filterDetectionByInstantSpeed(0, 50)
+        animalPool.plotTrajectory(title="Trajectories filtered by speed (0-5cm/s)")
 
         # filter detection by animalSpeed: 5-20cm/s
         animalPool.loadDetection(start=0, end=oneMinute * 5)
@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
         # filter detection by animalSpeed: 50-5000000cm/s
         animalPool.loadDetection(start=0, end=oneMinute * 5)
-        animalPool.filterDetectionByInstantSpeed(50, 50000000000) #TRAJECTORIES DUE TO TRACKING ISSUE
+        animalPool.filterDetectionByInstantSpeed(50, 50000000000)  # TRAJECTORIES DUE TO TRACKING ISSUE
         animalPool.plotTrajectory(title="Trajectories filtered by speed (>50cm/s)")
 
         # Reload all detection
