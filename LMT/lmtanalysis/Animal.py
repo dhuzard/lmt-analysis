@@ -5,8 +5,10 @@ Created on 7 sept. 2017
 '''
 
 import matplotlib as mpl
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+matplotlib.use('TkAgg')
 
 import numpy as np
 import math
@@ -28,8 +30,9 @@ from lmtanalysis.Chronometer import *
 from lmtanalysis.Detection import *
 
 # matplotlib fix for mac
-matplotlib.use('TkAgg')
-# USELESS FOR PC ??
+# matplotlib.use('TkAgg')
+# THe backend... is it the reason why my figures freeze ?
+
 
 idAnimalColor = [None, "red", "green", "blue", "orange"]
 
@@ -214,7 +217,7 @@ class Animal:
         previousKey = 0
 
         for key in keyList:
-            # print ( "key:", key, "value", self.getSpeed( key ) , "previous:" , previousKey )
+            # print("key:", key, ", Speed value:", self.getSpeed(key), ", previous key:", previousKey)
 
             if previousKey + 1 != key:
                 xList.append([np.nan, np.nan])
@@ -223,14 +226,15 @@ class Animal:
 
                 # print("break previous")
                 continue
-            previousKey = key
 
+            previousKey = key
             a = self.detectionDictionnary.get(key)
             if a is None:
                 xList.append([np.nan, np.nan])
                 yList.append([np.nan, np.nan])
                 # print("break none A")
                 continue
+
             b = self.detectionDictionnary.get(key + 1)
             if b is None:
                 xList.append([np.nan, np.nan])
@@ -245,20 +249,26 @@ class Animal:
 
     def plotTrajectory(self, show=True, color='k', maskingEventTimeLine=None, title=""):
         """ Plot the trajectory of an animal """
-
+        print("Plot trajectory of 1 animal:")
         print("Plotting the trajectory of animal " + self.name)
 
         xList, yList = self.getTrajectoryData(maskingEventTimeLine)
 
         plt.figure()
+        print(xList)
+        print(yList)
 
         plt.plot(xList, yList, color=color, linestyle='-', linewidth=1, alpha=0.5, label=self.name)
         plt.title(title + self.RFID)
         plt.xlim(90, 420)
         plt.ylim(-370, -40)
 
+        plt.draw()
+        # plt.pause(1)
+
         if show:
             plt.show()
+        print("testeeedddd")
 
     def plotTrajectory3D(self):
         """ Plot 3D trajectory of an animal """
@@ -1212,11 +1222,10 @@ class AnimalPool:
         if title is None:
             title = "Trajectory of animals"
 
-        # Draw all animals
+        """ Draw all animals """
         axis = axes[0]
         legendList = []
         for animal in self.getAnimalList():
-
             print("Compute trajectory of animal " + animal.name)
             xList, yList = animal.getTrajectoryData(maskingEventTimeLine)
             print("Draw trajectory of animal " + animal.name)
@@ -1231,7 +1240,7 @@ class AnimalPool:
         axis.set_xlim(90, 420)
         axis.set_ylim(-370, -40)
 
-        # Draw separated animals
+        """ Draw separated animals """
         for animal in self.getAnimalList():
             axis = axes[self.getAnimalList().index(animal) + 1]
 
@@ -1255,8 +1264,9 @@ class AnimalPool:
             print("Saving figure : " + saveFile)
             fig.savefig(saveFile, dpi=100)
 
-        if (show):
+        if show:
             plt.show()
+
         plt.close()
 
     def showMask(self, t):

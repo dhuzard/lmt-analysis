@@ -43,11 +43,17 @@ def reBuildEvent( connection, file, tmin=None, tmax=None, pool=None):
         Dax: What does that mean?! 
         """  # TODO: understand this...
 
-        # TODO: Remove from the connection the moment when animals have a speed > 50cm/s!
-        # It should remove the 'bad tracking' ?!
+        # TODO: Remove from the detection the moment when animals have a speed > 50cm/s!
+        """ For this: need to create an Event 'Move too fast' and then create and remove the 'moveTooFasttimeline' """
+        # It should remove the 'bad tracking' ?! (because when there is a bad tracking there is a 'fast' move
+        # But maybe not always ??!
+
         moveSourceTimeLine[idAnimalA] = EventTimeLine(connection, "Stop", idAnimalA,
                                                       minFrame=tmin, maxFrame=tmax, inverseEvent=True)
         detectionTimeLine = EventTimeLine(connection, "Detection", idAnimalA, minFrame=tmin, maxFrame=tmax)
+
+        moveTooFastTimeLine = EventTimeLine(connection, "Move too fast", idAnimalA, minFrame=tmin, maxFrame=tmax)
+
         moveSourceTimeLine[idAnimalA].keepOnlyEventCommonWithTimeLine(detectionTimeLine)
         
         """ load contact dictionary with whatever animal """
@@ -55,13 +61,11 @@ def reBuildEvent( connection, file, tmin=None, tmax=None, pool=None):
                                                                       minFrame=tmin, maxFrame=tmax).getDictionnary()
 
     for idAnimalA in range(1, pool.getNbAnimals()+1):
-
         moveSocialResult = {}
         moveIsolatedResult = {}
         
         """ loop over eventlist """
         for moveEvent in moveSourceTimeLine[idAnimalA].eventList:
-        
             """ for each event we seek in t and search a match in isInContactDictionnary """
             for t in range(moveEvent.startFrame, moveEvent.endFrame+1):
                 if t in isInContactSourceDictionnary[idAnimalA]:
