@@ -8,7 +8,6 @@ import matplotlib as mpl
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-matplotlib.use('TkAgg')
 
 import numpy as np
 import math
@@ -30,8 +29,8 @@ from lmtanalysis.Chronometer import *
 from lmtanalysis.Detection import *
 
 # matplotlib fix for mac
-# matplotlib.use('TkAgg')
-# THe backend... is it the reason why my figures freeze ?
+matplotlib.use('TkAgg')
+# The backend... is it the reason why my figures freeze ?
 
 
 idAnimalColor = [None, "red", "green", "blue", "orange"]

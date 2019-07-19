@@ -21,7 +21,6 @@ from tabulate import tabulate
 
 
 class Log:
-
     def __init__(self, id, process, version, date, tmin, tmax):
         self.id = id
         self.process = process
@@ -32,7 +31,6 @@ class Log:
 
 
 class TaskLogger:
-
     def __init__(self, connection):
         self.logList = []
         self.conn = connection
@@ -42,7 +40,6 @@ class TaskLogger:
         self.loadLog()
 
     def createLogTableIfNeeded(self):
-
         try:
             cursor = self.conn.cursor()
             query = "SELECT ID, PROCESS, VERSION, DATE, TMIN, TMAX FROM LOG"
@@ -57,7 +54,6 @@ class TaskLogger:
             cursor.close()
 
     def loadLog(self):
-
         # print(self.__str__(), ": Loading log")
 
         self.logList.clear()
@@ -81,11 +77,9 @@ class TaskLogger:
             log = Log(id, process, version, date, tmin, tmax)
 
             self.logList.append(log)
-
         # print ( self.__str__(), " ", " {} log line loaded: " )
 
     def listLog(self):
-
         header = ["ID", "Process", "version", "date Y-M-D H:M:S", "tmin", "tmax"]
         data = []
 
@@ -95,7 +89,6 @@ class TaskLogger:
         print(tabulate(data, header, tablefmt='orgtbl'))
 
     def addLog(self, process, version='0', date=None, tmin=0, tmax=-1):
-
         if date is None:
             date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 

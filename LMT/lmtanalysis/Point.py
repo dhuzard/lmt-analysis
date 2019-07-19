@@ -9,7 +9,7 @@ import math
 
 class Point:
     """
-    classdocs
+    Defines a point with X and Y as coordinates
     """
 
     def __init__(self, x, y):

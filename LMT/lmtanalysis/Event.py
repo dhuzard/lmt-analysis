@@ -399,7 +399,7 @@ class EventTimeLine:
             durationEventInBin = 0
 
             for t in range(frame, frame + binSize):
-                if (t in dicEvent.keys()):
+                if t in dicEvent.keys():
                     durationEventInBin = durationEventInBin + 1
 
             durationEventInBinProportion = durationEventInBin / binSize
@@ -416,11 +416,11 @@ class EventTimeLine:
             for t in range(event.startFrame, event.endFrame + 1):
                 frameDico[t] = True;
 
-        if (minFrame != None):
+        if minFrame is not None:
             for key in dict(frameDico).keys():
                 if key < minFrame:
                     frameDico.pop(key)
-        if (maxFrame != None):
+        if maxFrame is not None:
             for key in dict(frameDico).keys():
                 if key > maxFrame:
                     frameDico.pop(key)

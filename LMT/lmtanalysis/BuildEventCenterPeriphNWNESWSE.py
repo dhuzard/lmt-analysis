@@ -120,7 +120,7 @@ def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
             else:  # in Periphery ?
                 resultPeripheryFab[t] = True
 
-            if dicA[t].isInZone(xa=185, xb=327, ya=280.5, yb=135.5) is True:  # Check if animal is in Center (Dax version)?
+            if dicA[t].isInZone(xa=185, xb=327, ya=280.5, yb=135.5) is True:  # Check if animal in Center (Dax version)?
                 resultCenterDax[t] = True
             else:  # in Periphery ?
                 resultPeripheryDax[t] = True
