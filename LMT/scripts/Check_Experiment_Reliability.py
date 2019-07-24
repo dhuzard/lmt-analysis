@@ -1,8 +1,8 @@
-'''
+"""
 Created on 26 avr. 2019
 
 @author: Elodie
-'''
+"""
 
 import sqlite3
 import math
@@ -19,9 +19,9 @@ from lmtanalysis.Util import getMinTMaxTAndFileNameInput, getFileNameInput, \
 from lmtanalysis.FileUtil import getFilesToProcess
 
 if __name__ == '__main__':
-    '''This script allows to have an overview of the quality of the tracking for the whole experiment.'''
+    """ This script allows to have an overview of the quality of the tracking for the whole experiment. """
 
-    behaviouralEvents = ["Contact", "Oral-oral Contact", "Oral-genital Contact", "Side by side Contact",
+    behavioralEvents = ["Contact", "Oral-oral Contact", "Oral-genital Contact", "Side by side Contact",
                          "Side by side Contact, opposite way", "Social approach", "Social escape", "Approach contact",
                          "Approach rear", "Break contact", "Get away", "FollowZone Isolated", "Train2", "Group2",
                          "Group3", "Group 3 break", "Group 3 make", "Group4", "Group 4 break", "Group 4 make",
@@ -40,9 +40,9 @@ if __name__ == '__main__':
         text_file.write("\n")
 
         ##########################################################################
-        '''Compute total recording duration'''
+        """ Compute total recording duration """
         print("##############################################################")
-        query = "SELECT MIN(TIMESTAMP) FROM FRAME";
+        query = "SELECT MIN(TIMESTAMP) FROM FRAME"
         c.execute(query)
         rows = c.fetchall()
         for row in rows:
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         print("Time of experiment start: {}".format(realStartTime))
         text_file.write("Time of experiment start: {}\n".format(realStartTime))
 
-        query = "SELECT MAX(TIMESTAMP) FROM FRAME";
+        query = "SELECT MAX(TIMESTAMP) FROM FRAME"
         c.execute(query)
         rows = c.fetchall()
         for row in rows:
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         '''Compute the total number of frames recorded'''
         # nbFramesRecorded = getNumberOfFrames(file)
         print("##############################################################")
-        query = "SELECT * FROM FRAME";
+        query = "SELECT * FROM FRAME"
         c.execute(query)
         framesRecorded = c.fetchall()
         nbFramesRecorded = len(framesRecorded)
@@ -85,13 +85,13 @@ if __name__ == '__main__':
                 nbFramesRecorded, nbFramesRecorded / oneSecond, nbFramesRecorded / oneMinute,
                 nbFramesRecorded / oneHour, nbFramesRecorded / oneDay))
 
-        query = "SELECT MIN(FRAMENUMBER) FROM FRAME";
+        query = "SELECT MIN(FRAMENUMBER) FROM FRAME"
         c.execute(query)
         minFrames = c.fetchall()
         for minFrame in minFrames:
             startFrame = minFrame[0]
 
-        query = "SELECT MAX(FRAMENUMBER) FROM FRAME";
+        query = "SELECT MAX(FRAMENUMBER) FROM FRAME"
         c.execute(query)
         maxFrames = c.fetchall()
         for maxFrame in maxFrames:
@@ -149,10 +149,11 @@ if __name__ == '__main__':
 
         print("##############################################################")
         ##########################################################################
-        '''Check events'''
+
+        """ Check events """
         text_file.write("\n")
         text_file.write("Total number of each event type:\n")
-        for event in behaviouralEvents:
+        for event in behavioralEvents:
             eventTimeLine = EventTimeLine(connection, event)
             nbOfEvents = eventTimeLine.getNumberOfEvent(minFrame=None, maxFrame=None)
             text_file.write("{}:\t {}\n".format(event, nbOfEvents))
@@ -164,4 +165,4 @@ if __name__ == '__main__':
 
     text_file.close()
 
-    print("job done")
+    print(" ***** All Jobs Done ! *****")

@@ -27,7 +27,6 @@ if __name__ == '__main__':
     '''
 
     for file in files:
-
         print(file)
         connection = sqlite3.connect(file)
 

@@ -29,7 +29,7 @@ from lmtanalysis.Chronometer import *
 from lmtanalysis.Detection import *
 
 # matplotlib fix for mac
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 # The backend... is it the reason why my figures freeze ?
 
 
@@ -251,6 +251,8 @@ class Animal:
         print("Plot trajectory of 1 animal:")
         print("Plotting the trajectory of animal " + self.name)
 
+        # plt.ioff()
+
         xList, yList = self.getTrajectoryData(maskingEventTimeLine)
 
         plt.figure()
@@ -262,12 +264,11 @@ class Animal:
         plt.xlim(90, 420)
         plt.ylim(-370, -40)
 
-        plt.draw()
+        # plt.draw()
         # plt.pause(1)
 
         if show:
             plt.show()
-        print("testeeedddd")
 
     def plotTrajectory3D(self):
         """ Plot 3D trajectory of an animal """
@@ -309,6 +310,9 @@ class Animal:
 
         ax.plot(xList, yList, zList, label="3D Trajectory of " + self.RFID)
         ax.legend()
+
+        # plt.draw()
+        # plt.pause(2)
 
         plt.show()
 
@@ -1022,6 +1026,7 @@ class Animal:
         # ax.xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(30*60*10))
 
         plt.legend()
+
         if show:
             plt.show()
 
@@ -1266,7 +1271,9 @@ class AnimalPool:
         if show:
             plt.show()
 
-        plt.close()
+        #plt.draw()
+        #plt.pause(2)
+        #plt.close()
 
     def showMask(self, t):
         '''
@@ -1281,6 +1288,7 @@ class AnimalPool:
             mask = animal.getBinaryDetectionMask(t)
             mask.showMask(ax=ax)
 
+        # plt.pause(3)
         plt.show()
 
     def getParticleDictionnary(self, start, end):

@@ -11,6 +11,7 @@ from lmtanalysis.Chronometer import Chronometer
 
 import matplotlib.pyplot as plt
 import numpy as np
+import statistics as stat
 from turtledemo.penrose import start
 from lmtanalysis.Measure import *
 import sys
@@ -266,7 +267,7 @@ class EventTimeLine:
 
     def getEventAt(self, frameNumber):
         for event in self.eventList:
-            if (event.contain(frameNumber)):
+            if event.contain(frameNumber):
                 return event
         return None
 
@@ -288,13 +289,11 @@ class EventTimeLine:
 
         return True
 
-    '''
-    returns the closest event from framenumber, and the distance (in frame) to it.
-    assumes the eventList has been build by rebuildallevents, which makes them ordered.
-    '''
-
     def getClosestEventFromFrame(self, frameNumber, optimizeAssumingOrderedList=False, constraint=None):
-
+        '''
+        returns the closest event from framenumber, and the distance (in frame) to it.
+        assumes the eventList has been build by rebuildallevents, which makes them ordered.
+        '''
         if (self.hasEvent(frameNumber)):
             # we do have an event for this frame so the distance is 0
             return None, 0
@@ -346,12 +345,12 @@ class EventTimeLine:
 
         return closestEvent, bestDistance
 
-    def hasEvent(self, frameNumber):
-        if (self.getEventAt(frameNumber) != None):
+    def hasEvent(self, frameNumber):  # Check if the timeline has an event at the frame number specified
+        if self.getEventAt(frameNumber) is not None:
             return True
         return False
 
-    def getNumberOfEvent(self, minFrame=None, maxFrame=None):
+    def getNumberOfEvent(self, minFrame=None, maxFrame=None):  # Returns the number of events
         nbEvent = 0
 
         for event in self.eventList:
@@ -371,9 +370,9 @@ class EventTimeLine:
         return nbEvent
 
     def getTotalDurationEvent(self, tmin, tmax):
-        '''
-        return total duration between min and max t value.
-        '''
+        """
+        Returns the total duration between min and max t value.
+        """
         duration = 0
         dicEvent = self.getDictionnary()
         for t in range(tmin, tmax + 1):
@@ -383,7 +382,7 @@ class EventTimeLine:
 
     def getDurationEventInTimeBin(self, tmin=0, tmax=None, binSize=1 * oneMinute):
         '''
-        compute the proportion of frames within an event within a given time bin, to calculate the density
+        compute the proportion of frames of an event within a given time bin, to calculate the density
         '''
         if (tmax == None):
             tmax = self.getMaxT()
@@ -612,6 +611,32 @@ class EventTimeLine:
         else:
             return sum / nb
 
+    def getMedianEventLength(self):
+        nb = 0
+        eventsDurationList = []
+        for event in self.eventList:
+            nb += 1
+            eventsDurationList.append(event.duration())
+
+        if nb == 0:
+            return None
+        else:
+            return stat.median(eventsDurationList)
+
+    def getEventDurationList(self):
+        """ Dax (20190724):
+        Returns a list with the duration of the events """
+        nb = 0
+        eventsDurationList = []
+        for event in self.eventList:
+            nb += 1
+            eventsDurationList.append(event.duration())
+
+        if nb == 0:
+            return None
+        else:
+            return eventsDurationList
+
     def getStandardDeviationEventLength(self):
         durationList = []
         for event in self.eventList:
@@ -724,7 +749,7 @@ class EventTimeLine:
         '''
         delete the old event timeline and save the new calculated one in the lmtanalysis
         '''
-        if (len(self.eventList) == 0):
+        if len(self.eventList) == 0:
             print("no event")
         else:
             print("Number of event: ", len(self.eventList))
@@ -747,27 +772,22 @@ class EventTimeLine:
         '''
         compute the proportion of frames within the time bin that are included in one event type
         '''
-        if (tmax == None):
+        if tmax is None:
             tmax = self.getMaxT()
 
         dicEvent = self.getDictionnary()
-
         densityEventInBinList = []
-
         frame = tmin
 
-        while (frame <= tmax):
-
+        while frame <= tmax:
             durationEventInBin = 0
 
             for t in range(frame, frame + binSize):
-                if (t in dicEvent.keys()):
+                if t in dicEvent.keys():
                     durationEventInBin = durationEventInBin + 1
 
             densityEventInBin = durationEventInBin / binSize
-
             densityEventInBinList.append(densityEventInBin)
-
             frame = frame + binSize
 
         return densityEventInBinList
@@ -797,7 +817,7 @@ class EventTimeLine:
         mergedDico = {}
 
         for k in dico.keys():
-            if (k in dicoCandidate):
+            if k in dicoCandidate:
                 mergedDico[k] = True
 
         mergedTimeLine = EventTimeLine(None, eventName="Merged", loadEvent=False)
@@ -812,23 +832,19 @@ class EventTimeLine:
 
         nbMatch = 0
         for event in self.eventList:
-
             for eventCandidate in mergedTimeLine.eventList:
-
                 if event.overlapEvent(eventCandidate):
-
                     nbMatch += 1
                     meanEventT = event.startFrame + (event.endFrame - event.startFrame) / 2
                     foundEvent = timeLineCandidate.getEventAt(meanEventT)
-                    if (foundEvent != None):
+                    if foundEvent is not None:
                         foundEventList.append(foundEvent)
 
-                        if (foundEvent.duration() > event.duration() * 2):
-
+                        if foundEvent.duration() > event.duration() * 2:
                             try:
                                 a = (meanEventT - foundEvent.startFrame) / foundEvent.duration()
                                 a = int(a * 100)
-                                if (a in relativityDico):
+                                if a in relativityDico:
                                     relativityDico[a] += 1
                                 else:
                                     relativityDico[a] = 1
