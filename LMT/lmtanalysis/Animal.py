@@ -5,7 +5,6 @@ Created on 7 sept. 2017
 '''
 
 import matplotlib as mpl
-import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -29,7 +28,7 @@ from lmtanalysis.Chronometer import *
 from lmtanalysis.Detection import *
 
 # matplotlib fix for mac
-# matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 # The backend... is it the reason why my figures freeze ?
 
 
@@ -268,7 +267,7 @@ class Animal:
         # plt.pause(1)
 
         if show:
-            plt.show()
+            plt.show(block=True)
 
     def plotTrajectory3D(self):
         """ Plot 3D trajectory of an animal """
@@ -1226,10 +1225,11 @@ class AnimalPool:
         if title is None:
             title = "Trajectory of animals"
 
-        """ Draw all animals """
+        # Draw all animals
         axis = axes[0]
         legendList = []
         for animal in self.getAnimalList():
+
             print("Compute trajectory of animal " + animal.name)
             xList, yList = animal.getTrajectoryData(maskingEventTimeLine)
             print("Draw trajectory of animal " + animal.name)
@@ -1244,7 +1244,7 @@ class AnimalPool:
         axis.set_xlim(90, 420)
         axis.set_ylim(-370, -40)
 
-        """ Draw separated animals """
+        # Draw separated animals
         for animal in self.getAnimalList():
             axis = axes[self.getAnimalList().index(animal) + 1]
 
@@ -1268,12 +1268,11 @@ class AnimalPool:
             print("Saving figure : " + saveFile)
             fig.savefig(saveFile, dpi=100)
 
-        if show:
-            plt.show()
+        if (show):
+            plt.show(block=True)
+            # plt.pause(3)
 
-        #plt.draw()
-        #plt.pause(2)
-        #plt.close()
+        plt.close()
 
     def showMask(self, t):
         '''

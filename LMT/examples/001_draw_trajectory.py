@@ -29,4 +29,4 @@ if __name__ == '__main__':
         animalPool.loadDetection(start=0, end=oneHour)
         
         # plot and show trajectory
-        animalPool.plotTrajectory(show=True)
+        animalPool.plotTrajectory()

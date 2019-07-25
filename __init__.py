@@ -52,17 +52,17 @@ if __name__ == '__main__':
         animalPool.loadDetection(start=0, end=oneMinute * 5)  # Resets the detection
         print("testeee 44")
         animalPool.filterDetectionByInstantSpeed(0, 60)  # filter detection by animalSpeed: 0-50cm/s
-        # animalPool.plotTrajectory(show=True, title="Trajectories filtered by speed (0-50cm/s)")
+        animalPool.plotTrajectory(show=True, title="Trajectories filtered by speed (0-50cm/s)")
         animalPool.getAnimalsDictionnary()[1].plotTrajectory(show=True, title="Animal 1, ", color="green")
-        # animalPool.getAnimalsDictionnary()[2].plotTrajectory(show=True, title="Animal 2, ", color="red")
-        # animalPool.getAnimalsDictionnary()[3].plotTrajectory(show=True, title="Animal 3, ", color="blue")
+        animalPool.getAnimalsDictionnary()[2].plotTrajectory(show=True, title="Animal 2, ", color="red")
+        animalPool.getAnimalsDictionnary()[3].plotTrajectory(show=True, title="Animal 3, ", color="blue")
 
         animalPool.loadDetection(start=0, end=oneMinute*5)  # Resets the detection
         animalPool.filterDetectionByInstantSpeed(60, 5000000000000)  # speed > 50cm/s = TRAJECTORIES DUE TO ERROR TRACK
-        # animalPool.plotTrajectory(title="Trajectories filtered by speed (>50cm/s)")
+        animalPool.plotTrajectory(title="Trajectories filtered by speed (>50cm/s)")
         animalPool.getAnimalsDictionnary()[1].plotTrajectory(show=True, title="Animal 1, ", color="green")
-        # animalPool.getAnimalsDictionnary()[2].plotTrajectory(show=True, title="Animal 2, ", color="red")
-        # animalPool.getAnimalsDictionnary()[3].plotTrajectory(show=True, title="Animal 3, ", color="blue")
+        animalPool.getAnimalsDictionnary()[2].plotTrajectory(show=True, title="Animal 2, ", color="red")
+        animalPool.getAnimalsDictionnary()[3].plotTrajectory(show=True, title="Animal 3, ", color="blue")
 
         """
         # filter detection by animalSpeed: 5-20cm/s
