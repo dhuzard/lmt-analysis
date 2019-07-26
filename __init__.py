@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.use('tkAgg')
 import csv
 
 import sqlite3
@@ -12,115 +11,97 @@ from lmtanalysis.Animal import AnimalPool
 from lmtanalysis.Measure import *
 from lmtanalysis.Event import EventTimeLine, plotMultipleTimeLine
 
-
 if __name__ == '__main__':
     files = getFilesToProcess()
+
+    """ DEFINE CONSTANTS """
+    start = oneHour * 7
+    stop = oneHour * 9
+    nbTimebins = int((stop - start) / oneHour)  # Do timebins of 1h
+    print("There are", nbTimebins, "bins")
 
     for file in files:
         plt.interactive(False)
         connection = sqlite3.connect(file)  # connect to database
         animalPool = AnimalPool()  # create an animalPool, which basically contains your animals
         animalPool.loadAnimals(connection)  # load infos about the animals
-        animalPool.loadDetection(start=0, end=oneMinute * 5)  # load the detection within the time specified
+        animalPool.loadDetection(start=start, end=stop)  # load the detection between Start and Stop
 
-        # plot and show original trajectory
-        # plt.figure()
+        """ plot and show original trajectory """
         # animalPool.plotTrajectory(show=True, title="Trajectories NOT filtered, scatter=True", scatter=True)
-
-        animalPool.getAnimalsDictionnary()[1].plotTrajectory(show=True, title="Animal 1, ", color="green")
-        print("testeee 22")
-        # animalPool.getAnimalsDictionnary()[2].plotTrajectory(show=True, title="Animal 2, ", color="red")
-        # animalPool.getAnimalsDictionnary()[3].plotTrajectory(show=True, title="Animal 3, ", color="blue")
-
         # animalPool.plotTrajectory(show=True, title="Trajectories NOT filtered, scatter=False", scatter=False)
 
-        # *********SORTING BY TIME BINS***********
+        """ ********* SORTING BY TIME BINS & EXCLUDE SPEED > 100cm/s *********** """
+
+        for i in range(nbTimebins):
+
+            animalPool.loadDetection(start=start + i * oneHour, end=start + i * oneHour + oneHour)
+            animalPool.filterDetectionByInstantSpeed(0, 100)  # Plot sorted by speed
+            animalPool.plotTrajectory(title="Trajectories filtered by speed (0-100cm/s). Time bin #" + str(i+1),
+                                      scatter=True)
+
+        """ *********SORTING BY SPEED*********** """
         """
-        for i in range(5):
-            # classic plots
-            animalPool.loadDetection(start=i * 1800, end=oneMinute + i * 1800)  # 1800 frames in 1 minute
-            animalPool.plotTrajectory(title=i, scatter=True)
+        animalPool.loadDetection(start=start, end=stop)  # load the detection between Start and Stop
+        animalPool.filterDetectionByInstantSpeed(0, 60)  # filter detection by animalSpeed: 0-60cm/s
+        animalPool.plotTrajectory(show=True, title="Trajectories filtered by speed (0-60cm/s)")
 
-            # Plot sorted by speed
-            animalPool.filterDetectionByInstantSpeed(0, 100)
-            animalPool.plotTrajectory(title="Trajectories filtered by speed (0-100cm/s)")
-        """
+        animalPool.loadDetection(start=start, end=stop)  # load the detection between Start and Stop
+        animalPool.filterDetectionByInstantSpeed(60, 5000000000000)  # speed > 60cm/s = TRAJECTORIES DUE TO ERROR TRACK
+        animalPool.plotTrajectory(title="Trajectories filtered by speed (>60cm/s)")
 
-        # *********SORTING BY SPEED***********
-        # TODO: SOLVE WHY PLOT TRAJECTORY OF ANIMALPOOL DOES NOT WORK !!!
-        print("testeee 33")
-        animalPool.loadDetection(start=0, end=oneMinute * 5)  # Resets the detection
-        print("testeee 44")
-        animalPool.filterDetectionByInstantSpeed(0, 60)  # filter detection by animalSpeed: 0-50cm/s
-        animalPool.plotTrajectory(show=True, title="Trajectories filtered by speed (0-50cm/s)")
-        animalPool.getAnimalsDictionnary()[1].plotTrajectory(show=True, title="Animal 1, ", color="green")
-        animalPool.getAnimalsDictionnary()[2].plotTrajectory(show=True, title="Animal 2, ", color="red")
-        animalPool.getAnimalsDictionnary()[3].plotTrajectory(show=True, title="Animal 3, ", color="blue")
-
-        animalPool.loadDetection(start=0, end=oneMinute*5)  # Resets the detection
-        animalPool.filterDetectionByInstantSpeed(60, 5000000000000)  # speed > 50cm/s = TRAJECTORIES DUE TO ERROR TRACK
-        animalPool.plotTrajectory(title="Trajectories filtered by speed (>50cm/s)")
-        animalPool.getAnimalsDictionnary()[1].plotTrajectory(show=True, title="Animal 1, ", color="green")
-        animalPool.getAnimalsDictionnary()[2].plotTrajectory(show=True, title="Animal 2, ", color="red")
-        animalPool.getAnimalsDictionnary()[3].plotTrajectory(show=True, title="Animal 3, ", color="blue")
-
-        """
-        # filter detection by animalSpeed: 5-20cm/s
-        animalPool.loadDetection(start=0, end=oneMinute * 5)
-        animalPool.filterDetectionByInstantSpeed(5, 20)
+        animalPool.loadDetection(start=start, end=stop)  # load the detection between Start and Stop
+        animalPool.filterDetectionByInstantSpeed(5, 20)  # filter detection by animalSpeed: 5-20cm/s
         #animalPool.plotTrajectory(title="Trajectories filtered by speed (5-20cm/s)")
 
-        # filter detection by animalSpeed: 40-50cm/s
-        animalPool.loadDetection(start=0, end=oneMinute * 5)
-        animalPool.filterDetectionByInstantSpeed(40, 50)
+        animalPool.loadDetection(start=start, end=stop)  # load the detection between Start and Stop
+        animalPool.filterDetectionByInstantSpeed(40, 50)  # filter detection by animalSpeed: 40-50cm/s
         #animalPool.plotTrajectory(title="Trajectories filtered by speed (40-50cm/s)")
-
-        # filter detection by animalSpeed: 0-50cm/s
-        animalPool.loadDetection(start=0, end=oneMinute * 5)
-        animalPool.filterDetectionByInstantSpeed(00, 50)
-        animalPool.plotTrajectory(title="Trajectories filtered by speed (0-50cm/s)")
         """
 
-        """
-        animalPool.loadDetection(start=0, end=oneHour)  # Reload detections
-        # PLOT ALL TRAJECTORIES
+        animalPool.loadDetection(start=start, end=stop)  # Reload detections between start and stop
+        
         print("ALL TRAJECTORIES")
         for animal in animalPool.getAnimalList():
             print("Animal: ", animal.RFID)
-            numberOfFrame = len(animal.detectionDictionnary.keys())
-            timeInSecond = numberOfFrame / 30  # there are 30 frames per second
-            print("Time spent in area (s): ", timeInSecond)
-            print("Distance traveled in area (cm): ", animal.getDistance())  # distance traveled
+            nbOfDetectionFrames = len(animal.detectionDictionnary.keys())
+            timeInSecond = nbOfDetectionFrames / 30  # there are 30 frames per second
+            print("Total time spent in arena (s): ", timeInSecond)
+            print("Total distance traveled in arena (cm): ", animal.getDistance())  # distance traveled
 
         # DEFINE ZONES/CORNERS
         # NorthWest = [0, 0, 25, 25]
         # NorthEast = [25, 0, 50, 25]
         # SouthWest = [0, 25, 25, 50]
         # SouthEast = [25, 25, 50, 50]
-        CornersName = ['NorthWest', 'NorthEast', 'SouthWest', 'SouthEast']
+        # CornersName = ['NorthWest', 'NorthEast', 'SouthWest', 'SouthEast']
 
-        # DEFINE a Dictionnary of ZONES/CORNERS
-        Corners = {'NorthWest': [0, 0, 25, 25] , 'NorthEast': [25, 0, 50, 25], 'SouthWest': [0, 25, 25, 50],
-                   'SouthEast': [25, 25, 50, 50]}
+        """ DEFINE a Dictionary of ZONES/CORNERS """
+        Corners = {'NorthWest': [0, 0, 25, 25],
+                   'NorthEast': [25, 0, 50, 25],
+                   'SouthWest': [0, 25, 25, 50],
+                   'SouthEast': [25, 25, 50, 50]
+                   }
 
-        # *** PLOT THE 4 CORNERS SEQUENTIALLY ****
-
-        for corner in CornersName:
-            animalPool.loadDetection(start=0, end=5*oneMinute)
-            animalPool.filterDetectionByArea(Corners.get(corner)[0], Corners.get(corner)[1],
-                                             Corners.get(corner)[2], Corners.get(corner)[3])
+        """ *** PLOT THE 4 CORNERS SEQUENTIALLY **** """
+        plt.figure()
+        for cornerName in Corners.keys():
+            animalPool.loadDetection(start=start, end=stop)
+            animalPool.filterDetectionByArea(Corners.get(cornerName)[0], Corners.get(cornerName)[1],
+                                             Corners.get(cornerName)[2], Corners.get(cornerName)[3])
             for animal in animalPool.getAnimalList():  # loop over all animals
-                print("In corner: ", corner)
+                print("In corner: ", cornerName)
                 print("Animal: ", animal.RFID)  # print RFID
                 numberOfFrame = len(animal.detectionDictionnary.keys())
                 timeInSecond = numberOfFrame / 30  # there are 30 frames per second
                 print("Time spent in area (in second): ", timeInSecond)  # time in area
                 print("Distance traveled in area (in centimeter): ", animal.getDistance())  # distance traveled
-                animal.plotTrajectory(title="Trajectories in Corner ")
-            # animalPool.plotTrajectory(title="Trajectories in Corner ")
+                # animal.plotTrajectory(title="Trajectories in Corner ")
+            plt.subplot()
+            animalPool.plotTrajectory(title="Trajectories in Corner ", scatter=True)
 
         # **** Extract Behaviors ***
-
+        """
         # Rearings of ALL Rats
         RearingList = []
         for a in animalPool.getAnimalsDictionnary():
@@ -184,4 +165,4 @@ if __name__ == '__main__':
         print(dataFrame)
         dataFrame.to_csv('positions.csv')
         """
-        print("end")
+        print("!!! End of analysis !!!")

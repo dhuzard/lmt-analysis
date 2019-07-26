@@ -313,7 +313,7 @@ class Animal:
         # plt.draw()
         # plt.pause(2)
 
-        plt.show()
+        plt.show(block=True)
 
     def getDistance(self, tmin=0, tmax=None):
         """
@@ -1027,7 +1027,7 @@ class Animal:
         plt.legend()
 
         if show:
-            plt.show()
+            plt.show(block=True)
 
     def getBinaryDetectionMask(self, t):
         """
@@ -1215,7 +1215,7 @@ class AnimalPool:
 
     def plotTrajectory(self, show=True, maskingEventTimeLine=None, title=None, scatter=False, saveFile=None):
         """
-        Plots the trajectory of all the animals from the dictionnary of animals
+        Plots the trajectory of all the animals from the dictionary of animals
         """
 
         print("AnimalPool: plot trajectory.")
@@ -1229,7 +1229,6 @@ class AnimalPool:
         axis = axes[0]
         legendList = []
         for animal in self.getAnimalList():
-
             print("Compute trajectory of animal " + animal.name)
             xList, yList = animal.getTrajectoryData(maskingEventTimeLine)
             print("Draw trajectory of animal " + animal.name)
@@ -1268,7 +1267,7 @@ class AnimalPool:
             print("Saving figure : " + saveFile)
             fig.savefig(saveFile, dpi=100)
 
-        if (show):
+        if show:
             plt.show(block=True)
             # plt.pause(3)
 
@@ -1288,7 +1287,7 @@ class AnimalPool:
             mask.showMask(ax=ax)
 
         # plt.pause(3)
-        plt.show()
+        plt.show(block=True)
 
     def getParticleDictionnary(self, start, end):
         '''
