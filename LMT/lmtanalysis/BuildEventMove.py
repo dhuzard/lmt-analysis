@@ -25,7 +25,7 @@ def flush(connection):
 
 def reBuildEvent( connection, file, tmin=None, tmax=None, pool=None):
     """
-    Animal A is moving (built-in event):
+    Animal A is moving (built-in event) = Animal is NOT STOPPED !
     "Move social": animal A is moving and is in contact with any other animal.
     "Move isolated": animal A is moving alone.
     """

@@ -25,8 +25,8 @@ def EventTimeLineCached(connection, file, eventName, idA=None, idB=None, idC=Non
         # print ("Cache debug:", connection, file, eventName, "ids:" , idA, idB, idC, idD, "frames:", minFrame, maxFrame , loadEventWithoutOverlapCheck )
 
         if (file, eventName, idA, idB, idC, idD, minFrame, maxFrame, loadEventWithoutOverlapCheck) in eventCacheDico_:
-            eventTimeLine = eventCacheDico_[
-                file, eventName, idA, idB, idC, idD, minFrame, maxFrame, loadEventWithoutOverlapCheck]
+            eventTimeLine = eventCacheDico_[file, eventName, idA, idB, idC, idD,
+                                            minFrame, maxFrame, loadEventWithoutOverlapCheck]
             print(eventName, " Id(", idA, ",", idB, ",", idC, ",", idD, ") Loaded from cache (",
                   len(eventTimeLine.eventList), " records. )")
             return eventTimeLine
@@ -36,8 +36,8 @@ def EventTimeLineCached(connection, file, eventName, idA=None, idB=None, idC=Non
 
     if eventCacheEnable_:
         print("Caching eventTimeLine")
-        eventCacheDico_[
-            file, eventName, idA, idB, idC, idD, minFrame, maxFrame, loadEventWithoutOverlapCheck] = eventTimeLine
+        eventCacheDico_[file, eventName, idA, idB, idC, idD,
+                        minFrame, maxFrame, loadEventWithoutOverlapCheck] = eventTimeLine
     else:
         print("Loading event from base (Cache event disabled)")
 

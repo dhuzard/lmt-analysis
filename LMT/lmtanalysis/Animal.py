@@ -1096,7 +1096,7 @@ class AnimalPool:
         self.animalDictionnary = {}
 
     def getAnimalsDictionnary(self):
-        """ Returns the Dictionnary of the animals of the database """
+        """ Returns the dictionary of the animals of the database """
         return self.animalDictionnary
 
     def getAnimalWithId(self, id):

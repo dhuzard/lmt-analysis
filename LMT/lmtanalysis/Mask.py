@@ -1,18 +1,17 @@
-'''
+"""
 Created on 12 sept. 2017
 
 @author: Fab
-'''
+"""
 
 import math
 from lmtanalysis.Measure import *
 import zlib
-
-# matplotlib fix for mac
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.use('TkAgg')
+# matplotlib fix for mac
+# matplotlib.use('TkAgg')
 
 
 class Mask:
@@ -33,7 +32,7 @@ class Mask:
 
     def showMask(self, color=None, ax=None):
         """
-        show the mask in a figure
+        Plots the mask in a figure.
         """
         if color is None:
             color = self.color
@@ -41,11 +40,13 @@ class Mask:
         if ax is None:
             fig, ax = plt.subplots()
             ax.scatter(self.pointsX, self.pointsY, c=color)
-            plt.show()
+            plt.show(block=True)
+            # Dax: Added block=true to have it work... (not sure why it is needed)
+            #TODO: understand the "block=true" ?!
         else:
             ax.scatter(self.pointsX, self.pointsY, c=color)
 
-    def unzip(self, maskDataZipped):
+    def unzip(self, maskDataZipped):  # Dax: ??? WHAT IS THIS ?????
         # re fill 0 and put space instead of : separator    
         s = maskDataZipped.split(":")
         s2 = ""

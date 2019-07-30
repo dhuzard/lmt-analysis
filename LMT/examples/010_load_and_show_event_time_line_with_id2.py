@@ -11,33 +11,31 @@ from lmtanalysis.Measure import *
 from lmtanalysis.Event import EventTimeLine, plotMultipleTimeLine
 
 if __name__ == '__main__':
-    
-    #ask the user for database to process
+
+    # ask the user for database to process
     files = getFilesToProcess()
-    
+
     for file in files:
-        
+
         # connect to database
-        connection = sqlite3.connect( file )
-        
+        connection = sqlite3.connect(file)
+
         # create an animalPool, which basically contains your animals
         animalPool = AnimalPool()
-        
+
         # load infos about the animals
-        animalPool.loadAnimals( connection )
-        
+        animalPool.loadAnimals(connection)
+
         # load all detection (positions) of all animals for the first hour
-        animalPool.loadDetection( start = 0, end = oneHour )
-        
+        animalPool.loadDetection(start=0, end=oneHour)
+
         eventTimeLineList = []
-        for a in animalPool.getAnimalsDictionary():
-            for b in animalPool.getAnimalsDictionary():        
-                eventTimeLine = EventTimeLine( connection, "Oral-genital Contact", idA = a, idB = b, minFrame = 0, maxFrame = oneHour )
-                eventTimeLineList.append( eventTimeLine )        
-                    
-        plotMultipleTimeLine( eventTimeLineList )
-            
-        
-            
-    
-    
+        for a in animalPool.getAnimalsDictionnary():
+            for b in animalPool.getAnimalsDictionnary():
+                eventTimeLine = EventTimeLine(connection, "Oral-genital Contact", idA=a, idB=b, minFrame=0,
+                                              maxFrame=oneHour)
+                eventTimeLineList.append(eventTimeLine)
+
+        # print(eventTimeLine)
+
+        plotMultipleTimeLine(eventTimeLineList)

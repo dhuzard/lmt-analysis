@@ -1,22 +1,19 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
-import csv
-
 import sqlite3
 
-from lmtanalysis.FileUtil import getFilesToProcess
+import matplotlib.pyplot as plt
+import numpy as np
+
 from lmtanalysis.Animal import AnimalPool
-from lmtanalysis.Measure import *
 from lmtanalysis.Event import EventTimeLine, plotMultipleTimeLine
+from lmtanalysis.FileUtil import getFilesToProcess
+from lmtanalysis.Measure import *
 
 if __name__ == '__main__':
     files = getFilesToProcess()
 
     """ DEFINE CONSTANTS """
-    start = oneHour * 7
-    stop = oneHour * 9
+    start = oneHour * 1
+    stop = oneHour * 2
     nbTimebins = int((stop - start) / oneHour)  # Do timebins of 1h
     print("There are", nbTimebins, "bins")
 
@@ -32,12 +29,10 @@ if __name__ == '__main__':
         # animalPool.plotTrajectory(show=True, title="Trajectories NOT filtered, scatter=False", scatter=False)
 
         """ ********* SORTING BY TIME BINS & EXCLUDE SPEED > 100cm/s *********** """
-
         for i in range(nbTimebins):
-
             animalPool.loadDetection(start=start + i * oneHour, end=start + i * oneHour + oneHour)
             animalPool.filterDetectionByInstantSpeed(0, 100)  # Plot sorted by speed
-            animalPool.plotTrajectory(title="Trajectories filtered by speed (0-100cm/s). Time bin #" + str(i+1),
+            animalPool.plotTrajectory(title="Trajectories filtered by speed (0-100cm/s). Time bin #" + str(i + 1),
                                       scatter=True)
 
         """ *********SORTING BY SPEED*********** """
@@ -60,7 +55,7 @@ if __name__ == '__main__':
         """
 
         animalPool.loadDetection(start=start, end=stop)  # Reload detections between start and stop
-        
+
         print("ALL TRAJECTORIES")
         for animal in animalPool.getAnimalList():
             print("Animal: ", animal.RFID)
@@ -84,7 +79,7 @@ if __name__ == '__main__':
                    }
 
         """ *** PLOT THE 4 CORNERS SEQUENTIALLY **** """
-        plt.figure()
+        """
         for cornerName in Corners.keys():
             animalPool.loadDetection(start=start, end=stop)
             animalPool.filterDetectionByArea(Corners.get(cornerName)[0], Corners.get(cornerName)[1],
@@ -97,8 +92,8 @@ if __name__ == '__main__':
                 print("Time spent in area (in second): ", timeInSecond)  # time in area
                 print("Distance traveled in area (in centimeter): ", animal.getDistance())  # distance traveled
                 # animal.plotTrajectory(title="Trajectories in Corner ")
-            plt.subplot()
             animalPool.plotTrajectory(title="Trajectories in Corner ", scatter=True)
+        """
 
         # **** Extract Behaviors ***
         """
@@ -107,18 +102,40 @@ if __name__ == '__main__':
         for a in animalPool.getAnimalsDictionnary():
             RearingList.append(EventTimeLine(connection, "Rearing", idA=a, minFrame=0, maxFrame=oneHour))
         plotMultipleTimeLine(RearingList)
+        """
 
-        # Oral-genital contacts between ALL ANIMALS (FOR LOOP)
+        """ Oral-genital contacts between ALL ANIMALS """
         OralGenitalList = []
         for a in animalPool.getAnimalsDictionnary():
             for b in animalPool.getAnimalsDictionnary():
                 if a == b:
                     continue
-                OralGenitalList.append(EventTimeLine(connection, "Oral-genital Contact", idA=a,
-                                                     idB=b, minFrame=0, maxFrame=oneHour))
-                print(OralGenitalList)
+                eventTimeLine = EventTimeLine(connection, "Oral-genital Contact", idA=a, idB=b,
+                                              minFrame=start, maxFrame=stop)
+                OralGenitalList.append(eventTimeLine)
+                # print(OralGenitalList[a])
         plotMultipleTimeLine(OralGenitalList)
 
+        CI95 = []
+        for oralGen in OralGenitalList:
+            print("eventName :", oralGen.eventName)
+            print("eventNameWithId :", oralGen.eventNameWithId)
+            print("idA :", oralGen.idA)
+            print("idB :", oralGen.idB)
+            print("idC :", oralGen.idC)
+            print("idD :", oralGen.idD)
+            print("TotalLength :", oralGen.getTotalLength(), "frames.")
+            print("MeanEventLength :", oralGen.getMeanEventLength())
+            print("MedianEventLength :", oralGen.getMedianEventLength())
+            print("NumberOfEvent :", oralGen.getNumberOfEvent())
+            print("StandardDeviationEventLength :", oralGen.getStandardDeviationEventLength())
+
+            CI = 1.96 * oralGen.getStandardDeviationEventLength() / np.math.sqrt(oralGen.getNumberOfEvent())
+            CI95.append([oralGen.getMeanEventLength() - CI, oralGen.getMeanEventLength() + CI])
+            print("Confidence interval 95% => [", oralGen.getMeanEventLength() - CI, ",",
+                  oralGen.getMeanEventLength() + CI, "].")
+
+        """
         # *** Create Event list of Moving ***
         movingList = []
         for a in animalPool.getAnimalsDictionnary():
@@ -140,7 +157,10 @@ if __name__ == '__main__':
         print(df)
 
         df.to_csv('moving.csv')
+            
+        """
 
+        """
         # **** Print and Export X,Y,Z Coordinates ****
         animalPool.loadDetection(start=0, end=oneHour/12)
 
@@ -165,4 +185,5 @@ if __name__ == '__main__':
         print(dataFrame)
         dataFrame.to_csv('positions.csv')
         """
+
         print("!!! End of analysis !!!")

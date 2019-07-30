@@ -38,22 +38,23 @@ if __name__ == '__main__':
                                 "Train2", "Group2", "Group3", "Group 3 break", "Group 3 make", "Group4",
                                 "Group 4 break", "Group 4 make", "Move isolated", "Move in contact",
                                 "Nest3", "Nest4", "Rearing",  "Rear isolated", "Rear in contact", "Stop isolated",
-                                "WallJump", "Water Zone", "USV seq"]
+                                "WallJump", "Water Zone", "USV seq", "SAP"]
         if animalNumber == 3:
             behavioralEvents = ["Contact", "Oral-oral Contact", "Oral-genital Contact", "Side by side Contact",
                                 "Side by side Contact, opposite way", "Social approach", "Social escape",
                                 "Approach contact", "Approach rear", "Break contact", "Get away", "FollowZone Isolated",
                                 "Train2", "Group2", "Group3", "Group 3 break", "Group 3 make",
                                 "Move isolated", "Move in contact", "Rearing", "Rear isolated",
-                                "Rear in contact", "Stop isolated", "WallJump", "Water Zone", "USV seq"]
+                                "Rear in contact", "Stop isolated", "WallJump", "Water Zone", "USV seq", "SAP"]
         if animalNumber == 2:
             behavioralEvents = ["Contact", "Oral-oral Contact", "Oral-genital Contact", "Side by side Contact",
                                 "Side by side Contact, opposite way", "Social approach", "Social escape",
                                 "Approach contact", "Approach rear", "Break contact", "Get away", "FollowZone Isolated",
                                 "Train2", "Group2", "Move isolated", "Move in contact", "Rearing",
-                                "Rear isolated", "Rear in contact", "Stop isolated", "WallJump", "Water Zone"]
+                                "Rear isolated", "Rear in contact", "Stop isolated", "WallJump", "Water Zone", "SAP"]
         if animalNumber == 1:
-            behavioralEvents = ["Move isolated", "Rearing", "Rear isolated", "Stop isolated", "WallJump", "Water Zone"]
+            behavioralEvents = ["Move isolated", "Rearing", "Rear isolated", "Stop isolated", "WallJump", "Water Zone",
+                                "SAP"]
 
         animalPool.loadDetection(start=0, end=None)  # load the detection within the time specified
         animalPool.filterDetectionByInstantSpeed(0, 60)  # filter detection by animalSpeed: 0-60cm/s

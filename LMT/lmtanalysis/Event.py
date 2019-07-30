@@ -87,7 +87,7 @@ class EventTimeLine:
                  maxFrame=None, inverseEvent=False, loadEventWithoutOverlapCheck=False):
         """
         Load events:
-            where t>=minFrame and t<=maxFrame if applicable
+            where (minFrame <= t <= maxFrame) if applicable
             inverseEvent: inverse all timeline (used to make stop becomes move for instance)
         """
 
@@ -892,7 +892,7 @@ def deleteEventTimeLineInBase(connection, eventName, idA=None, idB=None, idC=Non
     print("Number of event deleted: {} ".format(cursor.rowcount))
 
 
-def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0):
+def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0, title=None):
     """
     Plot multiple timeLines
     """
@@ -912,8 +912,9 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0):
                 start.append(event.startFrame)
                 end.append(event.endFrame)
                 plt.Rectangle((event.startFrame, 1 + yOffset), event.duration(), 1)
-                if (event.endFrame > maxX):
+                if event.endFrame > maxX:
                     maxX = event.endFrame
+
             color = "k"
             if colorList is not None:
                 color = colorList[timeLineList.index(timeLine)]
@@ -928,20 +929,29 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0):
 
         # ax = plt.gca()
         # ax.relim()
+
     plt.grid(True, axis='x')
     marginTop = 0.3
     plt.ylim((0 + marginTop, len(timeLineList) + 1 - marginTop))
-    plt.axes().get_yaxis().set_visible(False)
+
+    # Previous line:
+    # plt.axes().get_yaxis().set_visible(False)
+    # New line:
+    # plt.gca().get_yaxis().set_visible(False)
+
     plt.subplots_adjust(left=0.2)
 
-    plt.legend()
+    if title is None:
+        plt.title("Timeline of an event")
+    else:
+        plt.title(title)
+    # plt.legend()
 
     if show:
-        plt.show()
+        plt.show(block=True)
 
 
 class TestEventTimeLine(unittest.TestCase):
-
     def test_MergeCloseEvents(self):
         myEventTimeLine = EventTimeLine(None, "testEvent", 1, 2, loadEvent=False)
         myEventTimeLine.addEvent(Event(50, 55))
