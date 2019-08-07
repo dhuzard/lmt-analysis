@@ -28,8 +28,8 @@ from lmtanalysis.Chronometer import *
 from lmtanalysis.Detection import *
 
 # matplotlib fix for mac
-matplotlib.use('TkAgg')
-# The backend... is it the reason why my figures freeze ?
+# matplotlib.use('TkAgg')
+# The backend... is it the reason why my figures freeze ? => Solved with plt.show(block=true)
 
 
 idAnimalColor = [None, "red", "green", "blue", "orange"]
@@ -317,10 +317,10 @@ class Animal:
 
     def getDistance(self, tmin=0, tmax=None):
         """
-        Returns the distance traveled by the animal (in cm)
+        Returns the distance traveled by the animal (in cm).
         """
 
-        print("Compute total distance min:{} max:{} ".format(tmin, tmax))
+        print("Compute total distance between min:{} and max:{} ".format(tmin, tmax))
         keyList = sorted(self.detectionDictionnary.keys())
 
         if tmax is None:
@@ -328,10 +328,8 @@ class Animal:
 
         totalDistance = 0
         for key in keyList:
-
             if key <= tmin or key >= tmax:
                 continue
-
             a = self.detectionDictionnary.get(key)
             b = self.detectionDictionnary.get(key + 1)
 
@@ -344,7 +342,6 @@ class Animal:
                 continue
 
             totalDistance += math.hypot(a.massX - b.massX, a.massY - b.massY)
-
         totalDistance *= scaleFactor
 
         return totalDistance

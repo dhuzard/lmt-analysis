@@ -62,9 +62,7 @@ def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
             appContactTimeLine = EventTimeLine(None, eventName, idAnimalA, idAnimalB, None, None, loadEvent=False)
 
             for eventApp in approachDico[idAnimalA, idAnimalB].eventList:
-
-                ''' new code: '''
-
+                """ new code: """
                 for t in range(eventApp.endFrame - TIME_WINDOW_BEFORE_EVENT,
                                eventApp.endFrame + TIME_WINDOW_BEFORE_EVENT + 1):
 

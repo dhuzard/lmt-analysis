@@ -900,7 +900,8 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0, ti
     yOffset = len(timeLineList) - 1
     maxX = 0
 
-    plt.figure(figsize=(10, yOffset / 2))
+    # plt.figure(figsize=(14, yOffset / 2))
+    plt.figure(figsize=(14, yOffset / 1.5))  # Better for events with only one animal
 
     for timeLine in timeLineList:
         start = []
@@ -920,8 +921,13 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0, ti
                 color = colorList[timeLineList.index(timeLine)]
 
             plt.hlines(y, start, end, color, lw=20)
-            plt.text(minValue, 1.0 + yOffset, "{}   ".format(timeLine.eventNameWithId), fontsize=9, ha='right',
-                     va='center', label='test')
+            # print("plotting the timeline:")
+            # print("y axis should display: ", timeLine.eventNameWithId)
+
+            # plt.text(minValue, 1.0 + yOffset, "{}   ".format(timeLine.eventNameWithId),
+            #          fontsize=9, horizontalalignment='right', verticalalignment='center', label='test')
+            plt.text(minValue, 1.0 + yOffset, "{}   ".format(timeLine.eventNameWithId),
+                     fontsize=9, horizontalalignment='right', verticalalignment='center')
 
         yOffset -= 1
 
@@ -936,8 +942,8 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0, ti
 
     # Previous line:
     # plt.axes().get_yaxis().set_visible(False)
-    # New line:
-    # plt.gca().get_yaxis().set_visible(False)
+    # Dax, New line:
+    plt.gca().get_yaxis().set_visible(False)  # Removes a weird error...
 
     plt.subplots_adjust(left=0.2)
 
@@ -946,6 +952,9 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0, ti
     else:
         plt.title(title)
     # plt.legend()
+
+    plt.tight_layout()  # Puts the figure in a 'tight' layout (avoid cutting titles or axes name)
+    # Not so Good for behaviors with only 1 animal
 
     if show:
         plt.show(block=True)

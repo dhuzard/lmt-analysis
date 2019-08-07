@@ -25,8 +25,8 @@ def flush(connection):
 
 def reBuildEvent( connection, file, tmin=None, tmax=None, pool=None):
     """
-    Animal A is moving (built-in event) = Animal is NOT STOPPED !
-    "Move social": animal A is moving and is in contact with any other animal.
+    Animal A is moving (built-in event) = Animal is NOT Stopped !
+    "Move in contact": animal A is moving and is in contact with any other animal.
     "Move isolated": animal A is moving alone.
     """
     
@@ -83,7 +83,7 @@ def reBuildEvent( connection, file, tmin=None, tmax=None, pool=None):
         moveIsolatedResultTimeLine.reBuildWithDictionnary(moveIsolatedResult)
         moveIsolatedResultTimeLine.endRebuildEventTimeLine(connection)
 
-        """ save "move social" """
+        """ save "move in contact" """
         moveSocialResultTimeLine = EventTimeLine(None, "Move in contact", idAnimalA, None, None, None, loadEvent=False)
         moveSocialResultTimeLine.reBuildWithDictionnary(moveSocialResult)
         moveSocialResultTimeLine.endRebuildEventTimeLine(connection)
