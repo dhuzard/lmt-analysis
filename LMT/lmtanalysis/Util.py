@@ -127,8 +127,7 @@ def recoverFrame(file, MyDatetime):
     connection = sqlite3.connect(file)
     c = connection.cursor()
 
-    # get timedate of 1st and last frame
-
+    # get datetime of 1st and last frames
     query = "SELECT FRAMENUMBER, TIMESTAMP FROM FRAME WHERE FRAMENUMBER=1";
     c.execute(query)
     all_rows = c.fetchall()

@@ -127,7 +127,8 @@ if __name__ == '__main__':
             text_file.write("Animal {}: {} missed detections over {} frames recorded ({} %)\n".format(
                 pool.animalDictionnary[animal].RFID, nbFramesRecorded - nbOfDetections, nbFramesRecorded,
                 missedDetection * 100))
-            '''Note: The score can be low, if the animals are often huddled in the nest and not identified individually.'''
+            ''' IMPORTANT Note: The score can be low, if the animals are often huddled in the nest 
+                and not identified individually.'''
 
         ##########################################################################
         '''Number of RFID match'''

@@ -42,11 +42,11 @@ MAX_DISTANCE_HEAD_HEAD_GENITAL_THRESHOLD = 15
 
 """ Conversions frames => seconds (30fps) """
 oneFrame = 1
-oneSecond = 30  # 30fps
-oneMinute = 30*60
-oneHour = 30*60*60
-oneDay = 30*60*60*24
-oneWeek = 30*60*60*24*7
+oneSecond = 30  # 30 fps
+oneMinute = 30*60  # 1'800 frames
+oneHour = 30*60*60  # 108'000 frames
+oneDay = 30*60*60*24  # 2'592'000 frames
+oneWeek = 30*60*60*24*7  # 18'144'000 frames
 
 """ time window at the end of an event to test overlap with another event (0.5 second) """
 TIME_WINDOW_BEFORE_EVENT = 15*oneFrame

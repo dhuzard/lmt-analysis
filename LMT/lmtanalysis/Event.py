@@ -663,7 +663,7 @@ class EventTimeLine:
             sum += event.duration()
         return sum
 
-    def plotEventDurationDistributionHist(self, nbBin=10, title=""):
+    def plotEventDurationDistributionHist(self, nbBin=20, title=None):
         data = []
         for event in self.eventList:
             data.append(event.duration())
@@ -674,13 +674,13 @@ class EventTimeLine:
         plt.xlabel("Event duration (in frames)")
         plt.ylabel("Number of events")
 
-        if title is not None:
-            plt.title(title)
+        if title is None:
+            plt.title("Histogram of Event '{}' duration:".format(self.eventName))
         else:
-            plt.title(". Hist. of duration of the event: {}".format(self.eventName))
+            plt.title(title)
 
         plt.figtext(.5, .85, "Number of bin: {}".format(nbBin), fontsize=10, ha='center')
-        plt.show()
+        plt.show(block=True)
 
     def plotEventDurationDistributionBar(self, minDuration=None, maxDuration=None, title=""):
         data = []
@@ -702,7 +702,7 @@ class EventTimeLine:
         plt.bar(indexes, data, 1)
         # plt.bar( 3,11,1 )
 
-        plt.xlabel("Events (sorted by duration)")
+        plt.xlabel("Number of Events (sorted by duration)")
         plt.ylabel("Duration (in frames)")
 
         if title is not None:
@@ -713,7 +713,7 @@ class EventTimeLine:
         plt.figtext(.5, .85,
                     "Number of events: {} (minDuration={}, maxDuration={})".format(len(data), minDuration, maxDuration),
                     fontsize=10, ha='center')
-        plt.show()
+        plt.show(block=True)
 
     def plotTimeLine(self):
         y = []
@@ -901,7 +901,8 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0, ti
     maxX = 0
 
     # plt.figure(figsize=(14, yOffset / 2))
-    plt.figure(figsize=(14, yOffset / 1.5))  # Better for events with only one animal
+    # plt.figure(figsize=(14, yOffset / 1.5))  # Better for events with only one animal
+    plt.figure(figsize=(14, yOffset))
 
     for timeLine in timeLineList:
         start = []
@@ -912,6 +913,8 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0, ti
                 y.append(1 + yOffset)
                 start.append(event.startFrame)
                 end.append(event.endFrame)
+                # end.append(event.endFrame+20)
+                # end.append(event.endFrame+100)  # Dax: Added 10 to see more event in the timeline (short events do not appear otherwise)
                 plt.Rectangle((event.startFrame, 1 + yOffset), event.duration(), 1)
                 if event.endFrame > maxX:
                     maxX = event.endFrame
@@ -920,23 +923,23 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0, ti
             if colorList is not None:
                 color = colorList[timeLineList.index(timeLine)]
 
-            plt.hlines(y, start, end, color, lw=20)
-            # print("plotting the timeline:")
-            # print("y axis should display: ", timeLine.eventNameWithId)
+            """ plots lines of '20 frames of thickness' for each events between "start" and 'end' """
+            plt.hlines(y, start, [x+20 for x in end], color, lw=20)
+            # The lines are horizontal lines with width of 20 ! (They look like vertical lines ;) )...
 
             # plt.text(minValue, 1.0 + yOffset, "{}   ".format(timeLine.eventNameWithId),
             #          fontsize=9, horizontalalignment='right', verticalalignment='center', label='test')
             plt.text(minValue, 1.0 + yOffset, "{}   ".format(timeLine.eventNameWithId),
-                     fontsize=9, horizontalalignment='right', verticalalignment='center')
+                     fontsize=9, horizontalalignment='right', verticalalignment='center')  # Y axes labels
 
         yOffset -= 1
 
         # plt.annotate('Longest event ({})'.format( longestEvent.duration()), xy=( longestEvent.startFrame, 1), xytext=(longestEvent.startFrame, 0.95), arrowprops=dict(facecolor='black', shrink=0.05))
-
         # ax = plt.gca()
         # ax.relim()
 
     plt.grid(True, axis='x')
+    plt.xlabel("Time in Frames (reminder: 1'800 frames = 1 minute and 108'000 frames = 1 hour)")
     marginTop = 0.3
     plt.ylim((0 + marginTop, len(timeLineList) + 1 - marginTop))
 
@@ -953,7 +956,7 @@ def plotMultipleTimeLine(timeLineList, colorList=None, show=True, minValue=0, ti
         plt.title(title)
     # plt.legend()
 
-    plt.tight_layout()  # Puts the figure in a 'tight' layout (avoid cutting titles or axes name)
+    plt.tight_layout()  # Puts the figure in a 'tight' layout format (avoid cutting titles or axes name)
     # Not so Good for behaviors with only 1 animal
 
     if show:
