@@ -25,7 +25,6 @@ def getNumberOfEventWithList(connection, eventName, idAnimalA, animalList, minFr
         timeLine = EventTimeLine(connection, eventName, idAnimalA, animalCandidate.baseId, minFrame=minFrame,
                                  maxFrame=maxFrame)
         sumOfEvent += timeLine.getNbEvent()
-
     return sumOfEvent
 
 
@@ -35,7 +34,6 @@ def getDurationOfEventWithList(connection, eventName, idAnimalA, animalList, min
         timeLine = EventTimeLine(connection, eventName, idAnimalA, animalCandidate.baseId, minFrame=minFrame,
                                  maxFrame=maxFrame)
         durationOfEvent += timeLine.getTotalLength()
-
     return durationOfEvent
 
 
