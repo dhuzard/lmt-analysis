@@ -10,112 +10,64 @@ from lmtanalysis.FileUtil import getFilesToProcess
 from lmtanalysis.Measure import *
 
 
-def computeBehaviorsData(behaviorList, show=False):
-    """ Computes the details of a behavioral list (Mean, Nb, Std, CI95).
-        Could then be used to compute statistics """
-    returnedBehaviors = {}
-    for beh in behaviorList:
-        name = beh.eventName
-        nameAndIds = beh.eventNameWithId
-        idA = beh.idA
-        idB = beh.idB
-        idC = beh.idC
-        idD = beh.idD
-        totalLength = beh.getTotalLength()
-        meanLength = beh.getMeanEventLength()
-        numberOfEvents = beh.getNumberOfEvent()
-        stdLength = beh.getStandardDeviationEventLength()
+def computeBehaviorsData(behavior, show=False):
+    """ Computes the details (Mean, Nb, Std, CI95...) of a behavior."""
 
-        if beh.getMedianEventLength() is None:
-            continue
-        medianLength = beh.getMedianEventLength()
+    name = behavior.eventName
+    nameAndIds = behavior.eventNameWithId
+    idA = behavior.idA
+    idB = behavior.idB
+    idC = behavior.idC
+    idD = behavior.idD
+    totalLength = behavior.getTotalLength()
+    meanLength = behavior.getMeanEventLength()
+    numberOfEvents = behavior.getNumberOfEvent()
+    stdLength = behavior.getStandardDeviationEventLength()
 
-        CI95 = []
-        CI = 1.96 * beh.getStandardDeviationEventLength() / np.math.sqrt(beh.getNumberOfEvent())
-        CI95.append(meanLength - CI)
-        CI95.append(meanLength + CI)
+    if behavior.getMedianEventLength() is not None:
+        medianLength = behavior.getMedianEventLength()
+    else:
+        medianLength = None
 
-        returnedBehaviors = {
-            "name": name,
-            "idA": idA,
-            "idB": idB,
-            "idC": idC,
-            "idD": idD,
-            "totalLength": totalLength,
-            "meanLength": meanLength,
-            "medianLength": medianLength,
-            "numberOfEvents": numberOfEvents,
-            "stdLength": stdLength,
-            "CI95_low": CI95[0],
-            "CI95_up": CI95[1]
-        }
+    CI95 = [None]*2
+    if meanLength is not None:
+        CI = 1.96 * behavior.getStandardDeviationEventLength() / np.math.sqrt(behavior.getNumberOfEvent())
+        CI95[0] = meanLength - CI
+        CI95[1] = meanLength + CI
+    else:
+        meanLength = None
 
-        print("**", nameAndIds, "**")
-        print("TotalLength :", totalLength, "frames.")
-        print("MeanEventLength :", meanLength)
-        print("MedianEventLength :", medianLength)
-        print("NumberOfEvent :", numberOfEvents)
-        print("StandardDeviationEventLength :", stdLength)
-        print("The confidence interval (95%) is [", CI95[0], ",", CI95[1], "].")
+    returnedBehaviors = {
+        "name": name,
+        "idA": idA,
+        "idB": idB,
+        "idC": idC,
+        "idD": idD,
+        "totalLength": totalLength,
+        "meanLength": meanLength,
+        "medianLength": medianLength,
+        "numberOfEvents": numberOfEvents,
+        "stdLength": stdLength,
+        "CI95_low": CI95[0],
+        "CI95_up": CI95[1]
+    }
 
-        # if show:
-            # beh.plotEventDurationDistributionHist(nbBin=30, title="Timebin #"+str(bin) + " / " + beh.eventNameWithId)
-            # beh.plotEventDurationDistributionBar(title="Timebin #"+str(bin) + " / " + beh.eventNameWithId)
+    print("/", nameAndIds, "/")
+    print("/TotalLength :", totalLength, "frames.")
+    print("/MeanEventLength :", meanLength)
+    print("/MedianEventLength :", medianLength)
+    print("/NumberOfEvent :", numberOfEvents)
+    print("/StandardDeviationEventLength :", stdLength)
+    print("/The confidence interval (95%) is [", CI95[0], ",", CI95[1], "].")
 
-    # TODO: Show the histogram of events, with a 'show' parameter, with one subplot per beh
-    # TODO: STORE THE VALUES IN A LIST/DICO TO BE ABLE TO USE THEM FOR STATS LATER (and with different timebins)
-    return returnedBehaviors
-"""
-def computeBehaviorsData(behaviorList, show=False):
-"""
-
-"""
-    Computes the details of a behavioral list (Mean, Nb, Std, CI95).
-        Could then be used to compute statistics 
-"""
-
-"""
-    returnedBehaviors = []
-    for beh in behaviorList:
-        name = beh.eventName
-        nameAndIds = beh.eventNameWithId
-        idA = beh.idA
-        idB = beh.idB
-        idC = beh.idC
-        idD = beh.idD
-        totalLength = beh.getTotalLength()
-        meanLength = beh.getMeanEventLength()
-        numberOfEvents = beh.getNumberOfEvent()
-        stdLength = beh.getStandardDeviationEventLength()
-
-        if beh.getMedianEventLength() is None:
-            continue
-        medianLength = beh.getMedianEventLength()
-
-        CI95 = []
-        CI = 1.96 * beh.getStandardDeviationEventLength() / np.math.sqrt(beh.getNumberOfEvent())
-        CI95.append(meanLength - CI)
-        CI95.append(meanLength + CI)
-
-        returnedBehaviors.append([name, idA, idB, idC, idD, totalLength, meanLength, medianLength, numberOfEvents,
-                                stdLength, CI95])
-
-        print("**", nameAndIds, "**")
-        print("TotalLength :", totalLength, "frames.")
-        print("MeanEventLength :", meanLength)
-        print("MedianEventLength :", medianLength)
-        print("NumberOfEvent :", numberOfEvents)
-        print("StandardDeviationEventLength :", stdLength)
-        print("The confidence interval (95%) is [", CI95[0], ",", CI95[1], "].")
-
-        # if show:
-            # beh.plotEventDurationDistributionHist(nbBin=30, title="Timebin #"+str(bin) + " / " + beh.eventNameWithId)
-            # beh.plotEventDurationDistributionBar(title="Timebin #"+str(bin) + " / " + beh.eventNameWithId)
+    # if show:
+        # beh.plotEventDurationDistributionHist(nbBin=30, title="Timebin #"+str(bin) + " / " + beh.eventNameWithId)
+        # beh.plotEventDurationDistributionBar(title="Timebin #"+str(bin) + " / " + beh.eventNameWithId)
 
     # TODO: Show the histogram of events, with a 'show' parameter, with one subplot per beh
-    # TODO: STORE THE VALUES IN A LIST/DICO TO BE ABLE TO USE THEM FOR STATS LATER (and with different timebins)
+
     return returnedBehaviors
-"""
+
 
 if __name__ == '__main__':
     files = getFilesToProcess()
@@ -173,29 +125,38 @@ if __name__ == '__main__':
 
         # Export the Infos (Mean, Std, ...) of the Behaviors for each timebin:
         dicoOfBehInfos = {
-            "start_frame": 0,
-            "stop_frame": 0,
-            "name": 0,
-            "idA": 0,
-            "idB": 0,
-            "idC": 0,
-            "idD": 0,
-            "totalLength": 0,
-            "meanLength": 0,
-            "medianLength": 0,
-            "numberOfEvents": 0,
-            "stdLength": 0,
-            "CI95_low": 0,
-            "CI95_up": 0
+            "start_frame": None,
+            "stop_frame": None,
+            "name": None,
+            "idA": None,
+            "idB": None,
+            "idC": None,
+            "idD": None,
+            "totalLength": None,
+            "meanLength": None,
+            "medianLength": None,
+            "numberOfEvents": None,
+            "stdLength": None,
+            "CI95_low": None,
+            "CI95_up": None
         }
 
         allBehaviorsInfo = {}
         listOfBehInfos = [None]*nbTimebins
         dfOfBehInfos = pd.DataFrame()
-        serie = pd.Series()
         listOfBehInfosDico = []
 
         for bin in range(nbTimebins):
+            startBin = start + bin * timeBinsDuration
+            stopBin = startBin + timeBinsDuration
+            print(" *-*-Loading data for bin", bin, "-*-*")
+            animalPool.loadDetection(start=startBin, end=stopBin)  # load the detection for the different bins
+            print("*-*-START:", startBin, " & STOP:", stopBin, "-*-*")
+
+            listOfBehDicos.append([startBin, stopBin])
+            listOfBehInfos[bin] = [startBin, stopBin]
+            dicoOfBehInfos["start_frame"] = startBin
+            dicoOfBehInfos["stop_frame"] = stopBin
 
             """ For 1+ ANIMAL """
             """
@@ -213,19 +174,6 @@ if __name__ == '__main__':
                     computeBehaviorsData(behavioralList, show=True)  # Function defined before __main__
             """
 
-            startBin = start + bin * timeBinsDuration
-            stopBin = startBin + timeBinsDuration
-            animalPool.loadDetection(start=startBin, end=stopBin)  # load the detection for the different bins
-
-            print("**-*-*-*-* BIN:", bin)
-            print("**-*-*-*-* START:", startBin)
-            print("**-*-*-*-* STOP:", stopBin)
-
-            listOfBehDicos.append([startBin, stopBin])
-            listOfBehInfos[bin] = [startBin, stopBin]
-            dicoOfBehInfos["start_frame"] = startBin
-            dicoOfBehInfos["stop_frame"] = stopBin
-
             """ FOR 2+ ANIMALS """
             if animalNumber >= 2:
                 for behavior in behavioralEventsForTwoAnimals:
@@ -233,7 +181,7 @@ if __name__ == '__main__':
                     behavioralList = []
 
                     for a in animalPool.getAnimalsDictionnary():
-                        if behavior == "Move in contact" or behavior == "Rear in contact":
+                        if behavior == "Move in contact" or behavior == "Rear in contact":  # Just idA in those behaviors
                             eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=startBin, maxFrame=stopBin)
                             behavioralList.append(eventTimeLine)
                             continue
@@ -244,21 +192,37 @@ if __name__ == '__main__':
                                                           minFrame=startBin, maxFrame=stopBin)
                             behavioralList.append(eventTimeLine)
 
-                        # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
+                            # List of Behavioral dicos with the different timebins:
+                            listOfBehDicos.extend(behavioralList)
 
-                        allBehaviorsDico[behavior] = behavioralList
-                        # computeBehaviorsData(behavioralList, show=True)  # Function defined before __main__
-                        # allBehaviorsInfo[behavior] = computeBehaviorsData(behavioralList)
+                            behavioralData = computeBehaviorsData(eventTimeLine)
+                            dicoOfBehInfos.update(behavioralData)
 
-                        listOfBehDicos.extend(behavioralList)  # List of Behavioral dicos with the different timebins
+                            # Creates a dataFrame with the behavioral Infos from the dictionary:
+                            index = [0]
+                            dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
+                            dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-                        dicoOfBehInfos.update(computeBehaviorsData(behavioralList))
+                            # List of Behavioral infos with the different timebins:
+                            listOfBehInfos[bin].extend(behavioralData.items())
+                    """
+                    # Updates the dictionary of 'behavioral infos':
+                    for beh in behavioralList:
+                        behavioralData = computeBehaviorsData(beh)
+                        dicoOfBehInfos.update(behavioralData)
 
-                        # List of Behavioral infos with the different timebins:
-                        listOfBehInfos[bin].extend(computeBehaviorsData(behavioralList).items())
+                        # Creates a dataFrame with the behavioral Infos from the dictionary:
                         index = [0]
                         dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
                         dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+
+                        # List of Behavioral infos with the different timebins:
+                        listOfBehInfos[bin].extend(behavioralData.items())
+                    """
+
+                    plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
+
+                    allBehaviorsDico[behavior] = behavioralList
 
             listOfBehInfosDico.append(dfOfBehInfosTemp)
             # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
