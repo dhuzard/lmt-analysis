@@ -28,7 +28,6 @@ def getMinTMaxTAndFileNameInput():
     text_file_name = input("File name : ")
     text_file_name = text_file_name + ".txt"
     text_file = open(text_file_name, "w")
-
     return tmin, tmax, text_file
 
 
@@ -36,7 +35,6 @@ def getFileNameInput():
     text_file_name = input("File name : ")
     text_file_name = text_file_name + ".txt"
     text_file = open(text_file_name, "w")
-
     return text_file
 
 
@@ -47,7 +45,6 @@ def convert_to_d_h_m_s(frames):
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
-
     return days, hours, minutes, seconds, f
 
 
@@ -66,10 +63,9 @@ def getNumberOfFrames(file):
     """ Returns the number of frames for a given experiment (a SQLite file) """
     connection = sqlite3.connect(file)
     c = connection.cursor()
-    query = "SELECT MAX(FRAMENUMBER) FROM FRAME";
+    query = "SELECT MAX(FRAMENUMBER) FROM FRAME"
     c.execute(query)
     numberOfFrames = c.fetchall()
-
     return int(numberOfFrames[0][0])
 
 
@@ -77,12 +73,11 @@ def getStartInDatetime(file):
     """ Returns the start of a given experiment in a datetime format """
     connection = sqlite3.connect(file)
     c = connection.cursor()
-    query = "SELECT MIN(TIMESTAMP) FROM FRAME";
+    query = "SELECT MIN(TIMESTAMP) FROM FRAME"
     c.execute(query)
     rows = c.fetchall()
     for row in rows:
         start = datetime.datetime.fromtimestamp(row[0] / 1000)
-
     return start
 
 
@@ -90,12 +85,11 @@ def getEndInDatetime(file):
     """ Returns the end of a given experiment in a datetime format """
     connection = sqlite3.connect(file)
     c = connection.cursor()
-    query = "SELECT MAX(TIMESTAMP) FROM FRAME";
+    query = "SELECT MAX(TIMESTAMP) FROM FRAME"
     c.execute(query)
     rows = c.fetchall()
     for row in rows:
         end = datetime.datetime.fromtimestamp(row[0] / 1000)
-
     return end
 
 
@@ -103,7 +97,7 @@ def getDatetimeFromFrame(file, frame):
     """ Return a datetime from a given frame """
     connection = sqlite3.connect(file)
     c = connection.cursor()
-    query = "SELECT TIMESTAMP FROM FRAME WHERE FRAMENUMBER = {}".format(frame);
+    query = "SELECT TIMESTAMP FROM FRAME WHERE FRAMENUMBER = {}".format(frame)
     # print(query)
     c.execute(query)
     rows = c.fetchall()
@@ -122,24 +116,24 @@ def getDatetimeFromFrame(file, frame):
 def recoverFrame(file, MyDatetime):
     """
     Return the closest FRAMENUMBER from a given datetime
-    The datetime must have this format: dd-mm-YYYY hh:mm:ss
+    The datetime must have this format: "YYYY-MM-DD hh:mm:ss"
     """
     connection = sqlite3.connect(file)
     c = connection.cursor()
 
     # get datetime of 1st and last frames
-    query = "SELECT FRAMENUMBER, TIMESTAMP FROM FRAME WHERE FRAMENUMBER=1";
+    query = "SELECT FRAMENUMBER, TIMESTAMP FROM FRAME WHERE FRAMENUMBER=1"
     c.execute(query)
     all_rows = c.fetchall()
     startTS = int(int(all_rows[0][1]) / 1000)
     startDate = datetime.datetime.fromtimestamp(startTS).strftime('%d-%m-%Y %H:%M:%S')
 
-    query = "SELECT max(FRAMENUMBER) FROM FRAME";
+    query = "SELECT max(FRAMENUMBER) FROM FRAME"
     c.execute(query)
     all_rows = c.fetchall()
     maxFrame = all_rows[0][0]
 
-    query = "SELECT FRAMENUMBER, TIMESTAMP FROM FRAME WHERE FRAMENUMBER={}".format(maxFrame);
+    query = "SELECT FRAMENUMBER, TIMESTAMP FROM FRAME WHERE FRAMENUMBER={}".format(maxFrame)
     c.execute(query)
     all_rows = c.fetchall()
     endTS = int(int(all_rows[0][1]) / 1000)
@@ -157,7 +151,7 @@ def recoverFrame(file, MyDatetime):
     print("TimeStamp * 1000 is : " + str(timeStamp))
     print("Searching closest frame in database....")
     query = "SELECT FRAMENUMBER, TIMESTAMP FROM FRAME WHERE TIMESTAMP>{} AND TIMESTAMP<{}".format(timeStamp - 10000,
-                                                                                                  timeStamp + 10000);
+                                                                                                  timeStamp + 10000)
 
     c.execute(query)
     all_rows = c.fetchall()
@@ -174,4 +168,5 @@ def recoverFrame(file, MyDatetime):
 
     print("Closest Frame in selected database is: " + str(closestFrame))
     print("Distance to target: " + str(smallestDif) + " milliseconds")
+
     return closestFrame

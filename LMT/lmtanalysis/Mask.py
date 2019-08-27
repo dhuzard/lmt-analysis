@@ -47,7 +47,7 @@ class Mask:
             ax.scatter(self.pointsX, self.pointsY, c=color)
 
     def unzip(self, maskDataZipped):  # Dax: ??? WHAT IS THIS ?????
-        # re fill 0 and put space instead of : separator    
+        # re-fill 0 and put space instead of : separator
         s = maskDataZipped.split(":")
         s2 = ""
         for value in s:
@@ -65,9 +65,7 @@ class Mask:
         index = 0
         for y in range(self.y, self.y + self.height):
             for x in range(self.x, self.x + self.width):
-
                 if uncompressed[index] == 1:
                     self.pointsX.append(x)
                     self.pointsY.append(-y)
-
                 index += 1

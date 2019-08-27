@@ -3,7 +3,7 @@ Created on 6 sept. 2017
 
 @author: Fab
 
-In some record, we do have an extra animal with None for all parameters.
+In some records, we do have an extra animal (dax: with No RFID) with None for all parameters.
 This script should be used to detect those animals in databases.
 """
 
@@ -31,7 +31,7 @@ def check(connection, tmin=None, tmax=None):
     nbAnimals = pool.getNbAnimals()
     print("nb animals: ", nbAnimals)
     for animal in pool.getAnimalList():
-        if (animal.name == None):
+        if animal.name is None:
             print("!!!! None animal detected with lmtanalysis id: ", animal.baseId)
 
             # log process

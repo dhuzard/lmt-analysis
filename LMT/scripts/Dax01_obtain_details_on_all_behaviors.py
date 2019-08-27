@@ -1,3 +1,9 @@
+"""
+Created on 20 August 2019
+
+@author: Dax
+"""
+
 import sqlite3
 
 import matplotlib.pyplot as plt
@@ -73,9 +79,9 @@ if __name__ == '__main__':
     files = getFilesToProcess()
 
     """ DEFINE CONSTANTS """
-    start = oneHour * 1
-    stop = oneHour * 2
-    timeBinsDuration = 10*oneMinute
+    start = 352716  # Enter a frame or something like 'oneHour * 1'
+    stop = 6832715  # Enter a frame or something like 'oneHour * 2'
+    timeBinsDuration = 1*oneHour
     """"""
     nbTimebins = int((stop - start) / timeBinsDuration)
     print("There are", nbTimebins, "time bins of ", timeBinsDuration, "frames ( = ", timeBinsDuration/30/60,
@@ -107,6 +113,22 @@ if __name__ == '__main__':
         if animalNumber >= 4:
             behavioralEventsForFourAnimals = ["Group4", "Group 4 break", "Group 4 make"]
             print("and:", behavioralEventsForFourAnimals)
+
+        """
+        if animalNumber >= 1:
+            behavioralEvents = ["Move", "Move isolated", "Rearing", "Rear isolated", "Stop isolated", "WallJump",
+                                "SAP"]
+        if animalNumber >= 2:
+            behavioralEvents.append("Contact", "Oral-oral Contact", "Oral-genital Contact", "Side by side Contact",
+                                    "Side by side Contact, opposite way", "Social approach", "Social escape",
+                                    "Approach contact", "Approach rear", "Break contact", "Get away", "FollowZone Isolated",
+                                    "Train2", "Group2", "Move in contact", "Rear in contact")
+        if animalNumber >= 3:
+            behavioralEvents.append("Group3", "Group 3 break", "Group 3 make")
+        if animalNumber >= 4:
+            behavioralEvents.append("Group4", "Group 4 break", "Group 4 make")
+        print("The behaviors extracted are:", behavioralEvents)
+        """
 
         animalPool.loadDetection(start=start, end=stop)  # load the detection between Start and Stop
         print("*** General parameters for the animals *** ")
@@ -159,41 +181,56 @@ if __name__ == '__main__':
             dicoOfBehInfos["stop_frame"] = stopBin
 
             """ For 1+ ANIMAL """
-            """
             if animalNumber >= 1:
                 for behavior in behavioralEventsForOneAnimal:
                     print("**** ", behavior, " ****")
-                    behavioralList = []
+                    behavioralList1 = []
 
                     for a in animalPool.getAnimalsDictionnary():
-                        eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=start, maxFrame=stop)
-                        behavioralList.append(eventTimeLine)
+                        eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=startBin, maxFrame=stopBin)
+                        behavioralList1.append(eventTimeLine)
 
-                    plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
-                    allBehaviorsDico[behavior] = behavioralList
-                    computeBehaviorsData(behavioralList, show=True)  # Function defined before __main__
-            """
+                        # List of Behavioral dictionaries with the different timebins:
+                        listOfBehDicos.extend(behavioralList1)
+
+                        behavioralData = computeBehaviorsData(eventTimeLine)
+                        dicoOfBehInfos.update(behavioralData)
+
+                        # Creates a dataFrame with the behavioral Infos from the dictionary:
+                        index = [0]
+                        dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
+                        dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+
+                        # List of Behavioral infos with the different timebins:
+                        listOfBehInfos[bin].extend(behavioralData.items())
+
+                    # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
+
+                    allBehaviorsDico[behavior] = behavioralList1
+
+                    listOfBehInfosDico.append(dfOfBehInfosTemp)
+                    # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
             """ FOR 2+ ANIMALS """
             if animalNumber >= 2:
                 for behavior in behavioralEventsForTwoAnimals:
                     print("**** ", behavior, " ****")
-                    behavioralList = []
+                    behavioralList2 = []
 
                     for a in animalPool.getAnimalsDictionnary():
                         if behavior == "Move in contact" or behavior == "Rear in contact":  # Just idA in those behaviors
                             eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=startBin, maxFrame=stopBin)
-                            behavioralList.append(eventTimeLine)
+                            behavioralList2.append(eventTimeLine)
                             continue
                         for b in animalPool.getAnimalsDictionnary():
                             if a == b:
                                 continue
                             eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b,
                                                           minFrame=startBin, maxFrame=stopBin)
-                            behavioralList.append(eventTimeLine)
+                            behavioralList2.append(eventTimeLine)
 
                             # List of Behavioral dicos with the different timebins:
-                            listOfBehDicos.extend(behavioralList)
+                            listOfBehDicos.extend(behavioralList2)
 
                             behavioralData = computeBehaviorsData(eventTimeLine)
                             dicoOfBehInfos.update(behavioralData)
@@ -205,39 +242,24 @@ if __name__ == '__main__':
 
                             # List of Behavioral infos with the different timebins:
                             listOfBehInfos[bin].extend(behavioralData.items())
-                    """
-                    # Updates the dictionary of 'behavioral infos':
-                    for beh in behavioralList:
-                        behavioralData = computeBehaviorsData(beh)
-                        dicoOfBehInfos.update(behavioralData)
 
-                        # Creates a dataFrame with the behavioral Infos from the dictionary:
-                        index = [0]
-                        dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
-                        dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+                    # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
 
-                        # List of Behavioral infos with the different timebins:
-                        listOfBehInfos[bin].extend(behavioralData.items())
-                    """
-
-                    plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
-
-                    allBehaviorsDico[behavior] = behavioralList
+                    allBehaviorsDico[behavior] = behavioralList2
 
             listOfBehInfosDico.append(dfOfBehInfosTemp)
             # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-        """ FOR 3+ ANIMALS """
-        """
+            """ FOR 3+ ANIMALS """
             if animalNumber >= 3:
                 for behavior in behavioralEventsForThreeAnimals:
                     print("**** ", behavior, " ****")
-                    behavioralList = []
+                    behavioralList3 = []
 
                     for a in animalPool.getAnimalsDictionnary():
                         if behavior == "Group 3 make" or behavior == "Group 3 break":
                             eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=start, maxFrame=stop)
-                            behavioralList.append(eventTimeLine)
+                            behavioralList3.append(eventTimeLine)
                             continue
                         for b in animalPool.getAnimalsDictionnary():
                             if a == b:
@@ -245,22 +267,36 @@ if __name__ == '__main__':
                             for c in animalPool.getAnimalsDictionnary():
                                 if a == c or b == c:
                                     continue
+                                eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b,
+                                                              minFrame=startBin, maxFrame=stopBin)
+                                behavioralList3.append(eventTimeLine)
 
-                                eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b, idC=c,
-                                                              minFrame=start, maxFrame=stop)
-                                behavioralList.append(eventTimeLine)
+                                # List of Behavioral dicos with the different timebins:
+                                listOfBehDicos.extend(behavioralList3)
 
-                    # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
-                    allBehaviorsDico[behavior] = behavioralList
-                    # computeBehaviorsData(behavioralList, show=True)  # Function defined before __main__
-                    allBehaviorsInfo[behavior] = computeBehaviorsData(behavioralList)
-            """
-        """ FOR 4 ANIMALS """
-        """
+                                behavioralData = computeBehaviorsData(eventTimeLine)
+                                dicoOfBehInfos.update(behavioralData)
+
+                                # Creates a dataFrame with the behavioral Infos from the dictionary:
+                                index = [0]
+                                dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
+                                dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+
+                                # List of Behavioral infos with the different timebins:
+                                listOfBehInfos[bin].extend(behavioralData.items())
+
+                # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
+
+                allBehaviorsDico[behavior] = behavioralList3
+
+                listOfBehInfosDico.append(dfOfBehInfosTemp)
+                # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+
+            """ FOR 4 ANIMALS """
             if animalNumber >= 4:
                 for behavior in behavioralEventsForFourAnimals:
                     print("**** ", behavior, " ****")
-                    behavioralList = []
+                    behavioralList4 = []
 
                     for a in animalPool.getAnimalsDictionnary():
                         for b in animalPool.getAnimalsDictionnary():
@@ -272,20 +308,32 @@ if __name__ == '__main__':
                                 for d in animalPool.getAnimalsDictionnary():
                                     if a == d or b == d or c == d:
                                         continue
+                                    eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b,
+                                                                  minFrame=startBin, maxFrame=stopBin)
+                                    behavioralList4.append(eventTimeLine)
 
-                                    eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b, idC=c, idD=d,
-                                                                  minFrame=start, maxFrame=stop)
-                                    behavioralList.append(eventTimeLine)
+                                    # List of Behavioral dicos with the different timebins:
+                                    listOfBehDicos.extend(behavioralList4)
 
-                    # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
-                    allBehaviorsDico[behavior] = behavioralList
-                    # computeBehaviorsData(behavioralList, show=True)  # Function defined before __main__
-                    allBehaviorsInfo[behavior] = computeBehaviorsData(behavioralList)
+                                    behavioralData = computeBehaviorsData(eventTimeLine)
+                                    dicoOfBehInfos.update(behavioralData)
 
-                listOfBehDicos.append(allBehaviorsDico)  # List of Behavioral dicos with the different timebins
-                dicoOfBehInfos.extend(allBehaviorsInfo)  # List of Behavioral infos with the different timebins
-        """
-        # TODO: Create a DataFrame with the Dictionary of all the behaviors ('allBehaviorsDico') ?
+                                    # Creates a dataFrame with the behavioral Infos from the dictionary:
+                                    index = [0]
+                                    dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
+                                    dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+
+                                    # List of Behavioral infos with the different timebins:
+                                    listOfBehInfos[bin].extend(behavioralData.items())
+
+                # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
+
+                allBehaviorsDico[behavior] = behavioralList4
+
+                listOfBehInfosDico.append(dfOfBehInfosTemp)
+                # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+
+        dfOfBehInfos.to_csv(r'D:\LMT on git\lmt-analysis\LMT\examples\dfOfBehInfos.csv')
 
         """ Say it's done ! """
         print("!!! End of analysis !!!")

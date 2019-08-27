@@ -14,7 +14,6 @@ from tkinter.filedialog import askopenfilename
 from lmtanalysis.Util import getMinTMaxTAndFileNameInput
 
 if __name__ == '__main__':
-
     print("Code launched.")
 
     files = askopenfilename(title="Choose a set of file to process", multiple=1)

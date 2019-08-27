@@ -1112,13 +1112,14 @@ class AnimalPool:
 
     def loadAnimals(self, conn):
         """ Loads the animals
-        DAX ??? """
+        DAX ???
+        """
         print("Loading animals.")
 
         cursor = conn.cursor()
         self.conn = conn
 
-        # Check the number of row available in base
+        # Check the number of rows available in base
         query = "SELECT * FROM ANIMAL"
         cursor.execute(query)
         field_names = [i[0] for i in cursor.description]
@@ -1138,7 +1139,7 @@ class AnimalPool:
         print("SQL Query: " + query)
 
         cursor.execute(query)
-        rows = cursor.fetchall()
+        rows = cursor.fetchall()  # fetchall() ==> List of Rows
         cursor.close()
 
         self.animalDictionnary.clear()
@@ -1271,10 +1272,9 @@ class AnimalPool:
         plt.close()
 
     def showMask(self, t):
-        '''
-        Shows the mask of all the animals in a figure.
-        '''
-
+        """
+        Shows the mask of all the animals, at the timepoint 't', in a figure.
+        """
         fig, ax = plt.subplots()
         ax.set_xlim(90, 420)
         ax.set_ylim(-370, -40)
@@ -1283,17 +1283,16 @@ class AnimalPool:
             mask = animal.getBinaryDetectionMask(t)
             mask.showMask(ax=ax)
 
-        # plt.pause(3)
         plt.show(block=True)
 
     def getParticleDictionnary(self, start, end):
-        '''
+        """
         Returns the number of particles per frame.
         (Dax: Particles are the bedding projections around a mouse?)
-        '''
+        """
 
         query = "SELECT * FROM FRAME WHERE FRAMENUMBER >= {} AND FRAMENUMBER <= {}".format(start, end)
-        # Query in a SQL database: Select all in FRAME for 'start < FRAMENUMBER < end'
+        # Query in a SQL database: Select all in FRAME for: start < FRAMENUMBER < end
         # Dax: What is FRAMENUMBER ??
 
         print("SQL Query: " + query)
