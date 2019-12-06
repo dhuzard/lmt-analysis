@@ -4,6 +4,8 @@ Created on 7 sept. 2017
 @author: Fab
 '''
 
+# Animals are CRAZY !
+
 from lmtanalysis.Detection import *
 
 #matplotlib fix for mac
