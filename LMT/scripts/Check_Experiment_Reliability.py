@@ -101,12 +101,10 @@ if __name__ == '__main__':
         print("Experiment duration based on frames: {} frames".format(durationExp))
 
         nbOmittedFrames = realDurationInSeconds * oneSecond - nbFramesRecorded
-        print("Number of frames omitted: {} ({} % of the total experiment duration)".format(nbOmittedFrames,
-                                                                                            100 * nbOmittedFrames / (
-                                                                                                        realDurationInSeconds * oneSecond)))
-        text_file.write("Number of frames omitted: {} ({} % of the total experiment duration)\n".format(nbOmittedFrames,
-                                                                                                        100 * nbOmittedFrames / (
-                                                                                                                    realDurationInSeconds * oneSecond)))
+        print("Number of frames omitted: {} ({} % of the total experiment duration)".format(
+            nbOmittedFrames,100 * nbOmittedFrames / (realDurationInSeconds * oneSecond)))
+        text_file.write("Number of frames omitted: {} ({} % of the total experiment duration)\n".format(
+            nbOmittedFrames, 100 * nbOmittedFrames / (realDurationInSeconds * oneSecond)))
         text_file.write("\n")
 
         print("##############################################################")
@@ -129,7 +127,12 @@ if __name__ == '__main__':
                 missedDetection * 100))
             ''' IMPORTANT Note: The score can be low, if the animals are often huddled in the nest 
                 and not identified individually.'''
-
+        # RUN THE CorrectDetectionIntegrity in that case?
+        print("IMPORTANT Note: The number of detections missed may be high if the animals are often huddled in the"
+              "nest and not identified individually. => Consider running the CorrectDetectionIntegrity.py script")
+        text_file.write("IMPORTANT Note: A high number of detections missed might occur if the animals are huddled "
+                        "in the nest and not identified individually.\n"
+                        "=> Consider running the CorrectDetectionIntegrity.py script")
         ##########################################################################
         '''Number of RFID match'''
         print("##############################################################")
@@ -143,10 +146,12 @@ if __name__ == '__main__':
                 pool.animalDictionnary[animal].RFID, nbOfRfidMatch, nbOfRfidMatch / (durationExp * 30 * 60)))
             print("Number of RFID mismatch for animal {}: {} (rate: {} events/min)".format(
                 pool.animalDictionnary[animal].RFID, nbOfRfidMismatch, nbOfRfidMismatch / (durationExp * 30 * 60)))
+            print("=> Percentage of mismatch = {%.2f})\n" % (nbOfRfidMismatch/nbOfRfidMatch*100))
             text_file.write("Number of RFID match for animal {}: {} (rate: {} events/min)\n".format(
                 pool.animalDictionnary[animal].RFID, nbOfRfidMatch, nbOfRfidMatch / (durationExp * 30 * 60)))
             text_file.write("Number of RFID mismatch for animal {}: {} (rate: {} events/min)\n".format(
                 pool.animalDictionnary[animal].RFID, nbOfRfidMismatch, nbOfRfidMismatch / (durationExp * 30 * 60)))
+            text_file.write("=> Percentage of mismatch = {%.2f})\n" % (nbOfRfidMismatch/nbOfRfidMatch*100))
 
         print("##############################################################")
         ##########################################################################

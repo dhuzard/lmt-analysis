@@ -333,7 +333,7 @@ if __name__ == '__main__':
                 listOfBehInfosDico.append(dfOfBehInfosTemp)
                 # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-        dfOfBehInfos.to_csv(r'D:\LMT on git\lmt-analysis\LMT\examples\dfOfBehInfos.csv')
+        dfOfBehInfos.to_csv(r'D:\LMT on git\lmt-analysis\LMT\examples\dfOfBehInfos_file{}.csv'.format())
 
         """ Say it's done ! """
         print("!!! End of analysis !!!")

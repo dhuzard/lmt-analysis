@@ -9,12 +9,13 @@ from lmtanalysis.Animal import *
 import matplotlib.pyplot as plt
 from lmtanalysis.Event import *
 from lmtanalysis.Measure import *
-from lmtanalysis import BuildEventTrain3, BuildEventTrain4, BuildEventTrain2, BuildEventFollowZone, BuildEventRear5, BuildEventFloorSniffing,\
-    BuildEventSocialApproach, BuildEventSocialEscape, BuildEventApproachContact,BuildEventOralOralContact,\
+from lmtanalysis import BuildEventTrain3, BuildEventTrain4, BuildEventTrain2, BuildEventFollowZone, BuildEventRear5, \
+    BuildEventFloorSniffing, \
+    BuildEventSocialApproach, BuildEventSocialEscape, BuildEventApproachContact, BuildEventOralOralContact, \
     BuildEventApproachRear, BuildEventGroup2, BuildEventGroup3, BuildEventGroup4, BuildEventOralGenitalContact, \
     BuildEventStop, BuildEventWaterPoint, \
-    BuildEventMove, BuildEventGroup3MakeBreak, BuildEventGroup4MakeBreak,\
-    BuildEventSideBySide, BuildEventSideBySideOpposite, BuildEventDetection,\
+    BuildEventMove, BuildEventGroup3MakeBreak, BuildEventGroup4MakeBreak, \
+    BuildEventSideBySide, BuildEventSideBySideOpposite, BuildEventDetection, \
     BuildDataBaseIndex, BuildEventWallJump, BuildEventSAP, BuildEventCenterPeriphNWNESWSE, \
     BuildEventOralSideSequence, CheckWrongAnimal, BuildEventCenterPeripheryLocation, \
     CorrectDetectionIntegrity, BuildEventNest4, BuildEventNest3, BuildEventFight, BuildEventGetAway
@@ -30,13 +31,15 @@ from lmtanalysis.EventTimeLineCache import flushEventTimeLineCache, disableEvent
 
 from lmtanalysis.EventTimeLineCache import EventTimeLineCached
 
+# Rebuild All Event is a test
+
 ''' minT and maxT to process the analysis (in frame) '''
 minT = 0
-maxT = 6*oneDay
+maxT = 6 * oneDay
 # maxT = (6+1)*oneHour
 
 ''' time window to compute the events. '''
-windowT = 1*oneDay
+windowT = 1 * oneDay
 # windowT = 3*oneDay #int (0.5*oneDay)
 
 USE_CACHE_LOAD_DETECTION_CACHE = True
@@ -47,38 +50,38 @@ class FileProcessException(Exception):
 
 
 eventClassList = [
-                BuildEventDetection,
-                BuildEventOralOralContact,
-                BuildEventOralGenitalContact,
-                BuildEventSideBySide,
-                BuildEventSideBySideOpposite,
-                BuildEventTrain2,
-                BuildEventTrain3,
-                BuildEventTrain4,
-                BuildEventMove,
-                BuildEventFollowZone,
-                BuildEventRear5,
-                BuildEventSocialApproach,
-                BuildEventGetAway,
-                BuildEventSocialEscape,
-                BuildEventApproachRear,
-                BuildEventGroup2,
-                BuildEventGroup3,
-                BuildEventGroup4,
-                BuildEventGroup3MakeBreak,
-                BuildEventGroup4MakeBreak,
-                BuildEventStop,
-                BuildEventWaterPoint,
-                BuildEventApproachContact,
-                BuildEventWallJump,
-                BuildEventSAP,
-                BuildEventOralSideSequence,
-                BuildEventNest3,
-                BuildEventNest4,
-                BuildEventFight,
-                BuildEventCenterPeripheryLocation,
-                BuildEventCenterPeriphNWNESWSE
-                ]
+    BuildEventDetection,
+    BuildEventOralOralContact,
+    BuildEventOralGenitalContact,
+    BuildEventSideBySide,
+    BuildEventSideBySideOpposite,
+    BuildEventTrain2,
+    BuildEventTrain3,
+    BuildEventTrain4,
+    BuildEventMove,
+    BuildEventFollowZone,
+    BuildEventRear5,
+    BuildEventSocialApproach,
+    BuildEventGetAway,
+    BuildEventSocialEscape,
+    BuildEventApproachRear,
+    BuildEventGroup2,
+    BuildEventGroup3,
+    BuildEventGroup4,
+    BuildEventGroup3MakeBreak,
+    BuildEventGroup4MakeBreak,
+    BuildEventStop,
+    BuildEventWaterPoint,
+    BuildEventApproachContact,
+    BuildEventWallJump,
+    BuildEventSAP,
+    BuildEventOralSideSequence,
+    BuildEventNest3,
+    BuildEventNest4,
+    BuildEventFight,
+    BuildEventCenterPeripheryLocation,
+    BuildEventCenterPeriphNWNESWSE
+]
 
 '''
 eventClassList = [
@@ -138,7 +141,6 @@ def process(file):
 
     try:
         flushEvents(connection)
-
         while currentT < maxT:
             currentMinT = currentT
             currentMaxT = currentT + windowT
@@ -169,21 +171,22 @@ def process(file):
             eventTimeLineList = []
 
             eventList = getAllEvents(connection)
-            file = open("outEvent"+str(windowT)+".txt", "w")
+            file = open("outEvent" + str(windowT) + ".txt", "w")
             file.write("Event name\nnb event\ntotal duration")
 
             for eventName in eventList:
                 for idAnimalA in range(0, 5):
-                        idA = idAnimalA
-                        if idA == 0:
-                            idA = None
-                        timeLine = EventTimeLineCached(connection, file, eventName, idA,  minFrame=minT, maxFrame=maxT)
-                        eventTimeLineList.append(timeLine)
-                        file.write( timeLine.eventNameWithId+"\t"+str(len(timeLine.eventList))+"\t"+str(timeLine.getTotalLength())+"\n" )
+                    idA = idAnimalA
+                    if idA == 0:
+                        idA = None
+                    timeLine = EventTimeLineCached(connection, file, eventName, idA, minFrame=minT, maxFrame=maxT)
+                    eventTimeLineList.append(timeLine)
+                    file.write(timeLine.eventNameWithId + "\t" + str(len(timeLine.eventList)) + "\t" + str(
+                        timeLine.getTotalLength()) + "\n")
 
             file.close()
 
-            plotMultipleTimeLine( eventTimeLineList )
+            plotMultipleTimeLine(eventTimeLineList)
 
             print("************* END TEST")
 

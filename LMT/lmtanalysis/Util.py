@@ -38,6 +38,13 @@ def getFileNameInput():
     return text_file
 
 
+def getCSVFileNameInput():
+    csv_file_name = input("CSV File name : ")
+    csv_file_name = csv_file_name + ".csv"
+    csv_file = open(csv_file_name, "w")
+    return csv_file
+
+
 def convert_to_d_h_m_s(frames):
     """ Return the tuple of days, hours, minutes and seconds. """
     # seconds = frames / 30

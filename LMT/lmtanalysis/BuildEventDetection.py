@@ -58,7 +58,6 @@ def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
     # pool.loadDetection( start = tmin, end = tmax )
 
     for idAnimalA in range(1, 5):
-
         eventName = "Detection"
         print(eventName)
 

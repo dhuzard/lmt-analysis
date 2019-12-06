@@ -18,6 +18,9 @@ After running this script, all detections at which all identities are not recogn
 import sqlite3
 from time import *
 
+from psutil import virtual_memory
+
+from EventTimeLineCache import disableEventTimeLineCache, flushEventTimeLineCache
 from lmtanalysis.Animal import *
 from lmtanalysis.Detection import *
 from lmtanalysis.Measure import *
@@ -26,6 +29,7 @@ import numpy as np
 from lmtanalysis.Event import *
 from lmtanalysis.Measure import *
 from lmtanalysis.Chronometer import Chronometer
+from lmtanalysis.FileUtil import getFilesToProcess
 
 
 def loadDetectionMap(connection, idAnimalA, start=None, end=None):
@@ -62,15 +66,28 @@ def correct(connection, tmin=None, tmax=None):
     pool.loadAnimals(connection)
     # pool.loadDetection(start=tmin, end=tmax)
 
-    """
-    get the number of expected animals
-    if there is not all detections expected, switch all to anonymous
-    """
+    c = connection.cursor()
+    if tmin is None:
+        query = "SELECT MIN(FRAMENUMBER) FROM FRAME"
+        c.execute(query)
+        minFrames = c.fetchall()
+        for minFrame in minFrames:
+            tmin = minFrame[0]
+
+    if tmax is None:
+        query = "SELECT MAX(FRAMENUMBER) FROM FRAME"
+        c.execute(query)
+        maxFrames = c.fetchall()
+        for maxFrame in maxFrames:
+            tmax = maxFrame[0]
+
+    """ Get the number of expected animals.
+    If there is not all detections expected, switch all to anonymous """
     validDetectionTimeLine = EventTimeLine(None, "IDs integrity ok", None, None, None, None, loadEvent=False)
     validDetectionTimeLineDictionnary = {}
 
     detectionTimeLine = {}
-    for idAnimal in pool.getAnimalsDictionary():
+    for idAnimal in pool.getAnimalsDictionnary():
         detectionTimeLine[idAnimal] = loadDetectionMap(connection, idAnimal, tmin, tmax)
 
     for t in range(tmin, tmax + 1):
@@ -80,10 +97,9 @@ def correct(connection, tmin=None, tmax=None):
                 valid = False
         if valid:
             validDetectionTimeLineDictionnary[t] = True
-    # The validDetectionTimeLineDictionnary contains all the times when the detection is valid!
-    """
-    Rebuild detection set
-    """
+    # The 'validDetectionTimeLineDictionnary' contains all the times when the detection is valid!
+
+    """ Rebuild detection set """
     cursor = connection.cursor()
     for idAnimal in detectionTimeLine.keys():
         for t in range(tmin, tmax + 1):
@@ -91,7 +107,7 @@ def correct(connection, tmin=None, tmax=None):
                 if not (t in validDetectionTimeLineDictionnary):  # If t is not valid
                     # Dax: ANIMALID is set to NULL (=> 'Anonymous')
                     query = "UPDATE `DETECTION` SET `ANIMALID`=NULL WHERE `FRAMENUMBER`='{}';".format(t)
-                    print("Rebuild detection Query:", query)
+                    # print("Rebuild detection Query:", query)
                     cursor.execute(query)
 
     connection.commit()
@@ -104,4 +120,18 @@ def correct(connection, tmin=None, tmax=None):
     t = TaskLogger(connection)
     t.addLog("Correct detection integrity", tmin=tmin, tmax=tmax)
 
-    print("Rebuild event finished.")
+    print("Correct detection finished.")
+
+
+if __name__ == '__main__':
+    files = getFilesToProcess()
+
+    for file in files:
+        print("Processing file", file)
+        connection = sqlite3.connect(file)  # connect to database
+        animalPool = AnimalPool()  # create an animalPool, which basically contains your animals
+        animalPool.loadAnimals(connection)  # load infos about the animals
+
+        correct(connection)
+
+    print("******* ALL JOBS DONE !!! *******")
