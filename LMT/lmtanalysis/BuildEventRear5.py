@@ -73,7 +73,7 @@ def reBuildEvent(connection, file, tmin=None, tmax=None, pool=None):
             if abs(slope) < BODY_SLOPE_THRESHOLD:
                 continue
 
-            print("At t=", t, " , the slope of the animal is: ", slope)
+            #print("At t=", t, " , the slope of the animal is: ", slope)
 
             if t in contactDico.keys():
                 # print("social")
