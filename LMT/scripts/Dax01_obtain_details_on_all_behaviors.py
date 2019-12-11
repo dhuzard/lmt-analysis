@@ -9,6 +9,7 @@ import sqlite3
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import datetime
 
 from lmtanalysis.Animal import AnimalPool
 from lmtanalysis.Event import EventTimeLine, plotMultipleTimeLine
@@ -58,46 +59,53 @@ def computeBehaviorsData(behavior, show=False):
         "CI95_up": CI95[1]
     }
 
-    print("/", nameAndIds, "/")
-    print("/TotalLength :", totalLength, "frames.")
-    print("/MeanEventLength :", meanLength)
-    print("/MedianEventLength :", medianLength)
-    print("/NumberOfEvent :", numberOfEvents)
-    print("/StandardDeviationEventLength :", stdLength)
-    print("/The confidence interval (95%) is [", CI95[0], ",", CI95[1], "].")
+    # print(f"{nameAndIds}")
+    # print(f"   -TotalLength: {totalLength} frames.")
+    # print(f"   -MeanEventLength: {meanLength}")
+    # print(f"   -MedianEventLength: {medianLength}")
+    # print(f"   -NumberOfEvent: {numberOfEvents}")
+    # print(f"   -StandardDeviationEventLength: {stdLength}")
+    # print(f"   -The confidence interval (95%) is [{CI95[0]},{CI95[1]}].")
 
     # if show:
         # beh.plotEventDurationDistributionHist(nbBin=30, title="Timebin #"+str(bin) + " / " + beh.eventNameWithId)
         # beh.plotEventDurationDistributionBar(title="Timebin #"+str(bin) + " / " + beh.eventNameWithId)
 
-    # TODO: Show the histogram of events, with a 'show' parameter, with one subplot per beh
+    # TODO: Show the histogram of events, with a 'show' parameter, with one subplot per behavior
 
     return returnedBehaviors
 
 
 if __name__ == '__main__':
     files = getFilesToProcess()
+    print(files)
+    ### DEFINE CONSTANTS ###
+    start = int(input("Enter the STARTING frame:"))
+    stop = int(input("Enter the ENDING frame:"))
+    timeBinsDuration = int(input("Enter the TIMEBIN (in frames, eg: 1h = 108'000 frames or 1min =  1'800 frames):"))
+    filename = input("Enter the filename for the .csv")
 
-    """ DEFINE CONSTANTS """
-    start = 352716  # Enter a frame or something like 'oneHour * 1'
-    stop = 6832715  # Enter a frame or something like 'oneHour * 2'
-    timeBinsDuration = 1*oneHour
-    """"""
+    # start = 1073619  # Enter a frame to start Analysis from (or something like 'oneHour * 1')
+    # stop = 4961593  # Enter a frame or something like 'oneHour * 2'
+    # timeBinsDuration = 60*oneMinute  # Enter the timebine (something like 'oneHour * 2' or 'oneMinute * 10')
+    ####################################################################################
+
     nbTimebins = int((stop - start) / timeBinsDuration)
-    print("There are", nbTimebins, "time bins of ", timeBinsDuration, "frames ( = ", timeBinsDuration/30/60,
-          "minutes ) between frames [", start, "-", stop, "].")
+    print(f"There are {nbTimebins} timebins of {timeBinsDuration} frames (= {timeBinsDuration/30/60} minutes) "
+          f"between frames: Start={start} and Stop={stop}].")
 
     for file in files:
+        print(f"The file name is: {file.title()}")
         connection = sqlite3.connect(file)  # connect to database
         animalPool = AnimalPool()  # create an animalPool, which basically contains your animals
         animalPool.loadAnimals(connection)  # load infos about the animals
 
         animalNumber = animalPool.getNbAnimals()
-        print("There are", animalNumber, "animals.")
+        print(f"There are {animalNumber} animals.")
 
         if animalNumber >= 1:
-            behavioralEventsForOneAnimal = ["Move", "Move isolated", "Rearing", "Rear isolated", "Stop isolated", "WallJump",
-                                            "SAP"]
+            behavioralEventsForOneAnimal = ["Move", "Move isolated", "Rearing", "Rear isolated",
+                                            "Stop isolated", "WallJump", "SAP"]
             print("The behaviors extracted are:", behavioralEventsForOneAnimal)
         if animalNumber >= 2:
             behavioralEventsForTwoAnimals = ["Contact", "Oral-oral Contact", "Oral-genital Contact", "Side by side Contact",
@@ -114,32 +122,30 @@ if __name__ == '__main__':
             behavioralEventsForFourAnimals = ["Group4", "Group 4 break", "Group 4 make"]
             print("and:", behavioralEventsForFourAnimals)
 
-        """
-        if animalNumber >= 1:
-            behavioralEvents = ["Move", "Move isolated", "Rearing", "Rear isolated", "Stop isolated", "WallJump",
-                                "SAP"]
-        if animalNumber >= 2:
-            behavioralEvents.append("Contact", "Oral-oral Contact", "Oral-genital Contact", "Side by side Contact",
-                                    "Side by side Contact, opposite way", "Social approach", "Social escape",
-                                    "Approach contact", "Approach rear", "Break contact", "Get away", "FollowZone Isolated",
-                                    "Train2", "Group2", "Move in contact", "Rear in contact")
-        if animalNumber >= 3:
-            behavioralEvents.append("Group3", "Group 3 break", "Group 3 make")
-        if animalNumber >= 4:
-            behavioralEvents.append("Group4", "Group 4 break", "Group 4 make")
-        print("The behaviors extracted are:", behavioralEvents)
-        """
+        # if animalNumber >= 1:
+        #     behavioralEvents = ["Move", "Move isolated", "Rearing", "Rear isolated", "Stop isolated", "WallJump",
+        #                         "SAP"]
+        # if animalNumber >= 2:
+        #     behavioralEvents.append("Contact", "Oral-oral Contact", "Oral-genital Contact", "Side by side Contact",
+        #                             "Side by side Contact, opposite way", "Social approach", "Social escape",
+        #                             "Approach contact", "Approach rear", "Break contact", "Get away", "FollowZone Isolated",
+        #                             "Train2", "Group2", "Move in contact", "Rear in contact")
+        # if animalNumber >= 3:
+        #     behavioralEvents.append("Group3", "Group 3 break", "Group 3 make")
+        # if animalNumber >= 4:
+        #     behavioralEvents.append("Group4", "Group 4 break", "Group 4 make")
+        # print("The behaviors extracted are:", behavioralEvents)
 
-        animalPool.loadDetection(start=start, end=stop)  # load the detection between Start and Stop
-        print("*** General parameters for the animals *** ")
-        for animal in animalPool.getAnimalList():
-            print("******")
-            print("Animal RFID:", animal.RFID, "/ Animal Id:", animal.baseId)
-            print("Animal name:", animal.name, "/ Animal genotype:", animal.genotype)
-            nbOfDetectionFrames = len(animal.detectionDictionnary.keys())
-            timeInSecond = nbOfDetectionFrames / 30  # 30 fps
-            print("Detection time: ", timeInSecond, "seconds.")
-            print("Distance traveled in arena (cm): ", animal.getDistance(tmin=start, tmax=stop))  # distance traveled
+        # animalPool.loadDetection(start=start, end=stop)  # load the detection between Start and Stop
+        # print("*** General parameters for the animals *** ")
+        # for animal in animalPool.getAnimalList():
+        #     print("******")
+        #     print("Animal RFID:", animal.RFID, "/ Animal Id:", animal.baseId)
+        #     print("Animal name:", animal.name, "/ Animal genotype:", animal.genotype)
+        #     nbOfDetectionFrames = len(animal.detectionDictionnary.keys())
+        #     timeInSecond = nbOfDetectionFrames / 30  # 30 fps
+        #     print("Detection time: ", timeInSecond, "seconds.")
+        #     print("Distance traveled in arena (cm): ", animal.getDistance(tmin=start, tmax=stop))  # distance traveled
 
         # Keep the behavioral dictionaries in a list:
         allBehaviorsDico = {}
@@ -171,16 +177,19 @@ if __name__ == '__main__':
         for bin in range(nbTimebins):
             startBin = start + bin * timeBinsDuration
             stopBin = startBin + timeBinsDuration
-            print(" *-*-Loading data for bin", bin, "-*-*")
+            print(f"************* Loading data for bin #{bin} *************")
+            now = datetime.datetime.now()
+            print("Current date and time : ")
+            print(now.strftime("%Y-%m-%d %H:%M:%S"))
+            print(f"*** Start frame = {startBin} // Stop frame = {stopBin} ***")
             animalPool.loadDetection(start=startBin, end=stopBin)  # load the detection for the different bins
-            print("*-*-START:", startBin, " & STOP:", stopBin, "-*-*")
 
             listOfBehDicos.append([startBin, stopBin])
             listOfBehInfos[bin] = [startBin, stopBin]
             dicoOfBehInfos["start_frame"] = startBin
             dicoOfBehInfos["stop_frame"] = stopBin
 
-            """ For 1+ ANIMAL """
+            #### For 1+ ANIMAL ####
             if animalNumber >= 1:
                 for behavior in behavioralEventsForOneAnimal:
                     print("**** ", behavior, " ****")
@@ -189,6 +198,8 @@ if __name__ == '__main__':
                     for a in animalPool.getAnimalsDictionnary():
                         eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=startBin, maxFrame=stopBin)
                         behavioralList1.append(eventTimeLine)
+                        behavioralList1.append(animalPool.getAnimalWithId(a).RFID)
+                         # print(animalPool.getAnimalWithId(a).RFID)
 
                         # List of Behavioral dictionaries with the different timebins:
                         listOfBehDicos.extend(behavioralList1)
@@ -211,7 +222,7 @@ if __name__ == '__main__':
                     listOfBehInfosDico.append(dfOfBehInfosTemp)
                     # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-            """ FOR 2+ ANIMALS """
+            #### FOR 2+ ANIMALS ####
             if animalNumber >= 2:
                 for behavior in behavioralEventsForTwoAnimals:
                     print("**** ", behavior, " ****")
@@ -221,6 +232,7 @@ if __name__ == '__main__':
                         if behavior == "Move in contact" or behavior == "Rear in contact":  # Just idA in those behaviors
                             eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=startBin, maxFrame=stopBin)
                             behavioralList2.append(eventTimeLine)
+                            behavioralList2.append(animalPool.getAnimalWithId(a).RFID)
                             continue
                         for b in animalPool.getAnimalsDictionnary():
                             if a == b:
@@ -250,16 +262,18 @@ if __name__ == '__main__':
             listOfBehInfosDico.append(dfOfBehInfosTemp)
             # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-            """ FOR 3+ ANIMALS """
+            #### FOR 3+ ANIMALS ####
             if animalNumber >= 3:
                 for behavior in behavioralEventsForThreeAnimals:
                     print("**** ", behavior, " ****")
                     behavioralList3 = []
 
                     for a in animalPool.getAnimalsDictionnary():
+                        # There is ONLY ONE animal making or braking a group of 3 or 4 mice
                         if behavior == "Group 3 make" or behavior == "Group 3 break":
                             eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=start, maxFrame=stop)
                             behavioralList3.append(eventTimeLine)
+                            behavioralList3.append(animalPool.getAnimalWithId(a).RFID)
                             continue
                         for b in animalPool.getAnimalsDictionnary():
                             if a == b:
@@ -267,7 +281,7 @@ if __name__ == '__main__':
                             for c in animalPool.getAnimalsDictionnary():
                                 if a == c or b == c:
                                     continue
-                                eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b,
+                                eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b, idC=c,
                                                               minFrame=startBin, maxFrame=stopBin)
                                 behavioralList3.append(eventTimeLine)
 
@@ -292,13 +306,19 @@ if __name__ == '__main__':
                 listOfBehInfosDico.append(dfOfBehInfosTemp)
                 # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-            """ FOR 4 ANIMALS """
+            #### FOR 4 ANIMALS ####
             if animalNumber >= 4:
                 for behavior in behavioralEventsForFourAnimals:
                     print("**** ", behavior, " ****")
                     behavioralList4 = []
 
                     for a in animalPool.getAnimalsDictionnary():
+                        # There is ONLY ONE animal making or braking a group of 3 or 4 mice
+                        if behavior == "Group 4 make" or behavior == "Group 4 break":
+                            eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=start, maxFrame=stop)
+                            behavioralList4.append(eventTimeLine)
+                            behavioralList4.append(animalPool.getAnimalWithId(a).RFID)
+                            continue
                         for b in animalPool.getAnimalsDictionnary():
                             if a == b:
                                 continue
@@ -308,7 +328,7 @@ if __name__ == '__main__':
                                 for d in animalPool.getAnimalsDictionnary():
                                     if a == d or b == d or c == d:
                                         continue
-                                    eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b,
+                                    eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b, idC=c, idD=d,
                                                                   minFrame=startBin, maxFrame=stopBin)
                                     behavioralList4.append(eventTimeLine)
 
@@ -333,7 +353,7 @@ if __name__ == '__main__':
                 listOfBehInfosDico.append(dfOfBehInfosTemp)
                 # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-        dfOfBehInfos.to_csv(r'D:\LMT on git\lmt-analysis\LMT\examples\dfOfBehInfos_file{}.csv'.format())
+        dfOfBehInfos.to_csv(filename)
 
-        """ Say it's done ! """
+        # Say it's done !
         print("!!! End of analysis !!!")

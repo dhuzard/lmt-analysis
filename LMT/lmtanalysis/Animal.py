@@ -4,9 +4,6 @@ Created on 7 sept. 2017
 @author: Fab
 '''
 
-#aNIAMLS DE PD
-
-#GES
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches

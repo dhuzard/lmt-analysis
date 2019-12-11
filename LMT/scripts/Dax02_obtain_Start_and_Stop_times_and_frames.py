@@ -34,8 +34,8 @@ if __name__ == '__main__':
         print(getDatetimeFromFrame(file, frame))
         """
 
-        startInput = input("When do you want to start the data extraction ('YYYY:MM:DD hh:mm:ss')?")
-        stopInput = input("When do you want to stop the data extraction ('YYYY:MM:DD hh:mm:ss')?")
+        startInput = input("When do you want to start the data extraction ('YYYY-MM-DD hh:mm:ss')?")
+        stopInput = input("When do you want to stop the data extraction ('YYYY-MM-DD hh:mm:ss')?")
         startFrame = recoverFrame(file, startInput)
         stopFrame = recoverFrame(file, stopInput)
         print("Those timings correspond to:")
