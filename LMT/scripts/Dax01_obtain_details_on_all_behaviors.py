@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import datetime
+import os
 
 from lmtanalysis.Animal import AnimalPool
 from lmtanalysis.Event import EventTimeLine, plotMultipleTimeLine
@@ -78,12 +79,22 @@ def computeBehaviorsData(behavior, show=False):
 
 if __name__ == '__main__':
     files = getFilesToProcess()
-    print(files)
+    filenames = [os.path.basename(files[x]) for x in range(0, len(files))]
+    print(f"{files} => {filenames}")
+
     ### DEFINE CONSTANTS ###
-    start = int(input("Enter the STARTING frame:"))
-    stop = int(input("Enter the ENDING frame:"))
-    timeBinsDuration = int(input("Enter the TIMEBIN (in frames, eg: 1h = 108'000 frames or 1min =  1'800 frames):"))
-    filename = input("Enter the filename for the .csv")
+    start = {}
+    stop = {}
+    timeBinsDuration = int(input("Enter the TIMEBIN for ALL the files (1min =  1800 frames / 1h = 108000 frames):"))
+
+    if len(files) == 0:
+        print("NO FILE TO PROCESS !!!!!")
+    if len(files) >= 1:
+        for filename in filenames:
+            start[filename] = int(input(f"Enter the STARTING frame for {filename}:"))
+            stop[filename] = int(input(f"Enter the ENDING frame for {filename}:"))
+        # filename = input("Enter the filename for the .csv")
+
 
     # start = 1073619  # Enter a frame to start Analysis from (or something like 'oneHour * 1')
     # stop = 4961593  # Enter a frame or something like 'oneHour * 2'

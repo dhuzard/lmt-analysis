@@ -20,15 +20,16 @@ from lmtanalysis import BuildEventTrain3, BuildEventTrain4, BuildEventTrain2, Bu
     BuildEventOralSideSequence, CheckWrongAnimal, BuildEventCenterPeripheryLocation, \
     CorrectDetectionIntegrity, BuildEventNest4, BuildEventNest3, BuildEventFight, BuildEventGetAway
 
-from psutil import virtual_memory
 
-from tkinter.filedialog import askopenfilename
-from lmtanalysis.TaskLogger import TaskLogger
 import sys
 import traceback
+import os
+
+from psutil import virtual_memory
+from tkinter.filedialog import askopenfilename
+from lmtanalysis.TaskLogger import TaskLogger
 from lmtanalysis.FileUtil import getFilesToProcess
 from lmtanalysis.EventTimeLineCache import flushEventTimeLineCache, disableEventTimeLineCache
-
 from lmtanalysis.EventTimeLineCache import EventTimeLineCached
 
 # Rebuild All Event is a test
@@ -229,6 +230,7 @@ if __name__ == '__main__':
         disableEventTimeLineCache()
 
     files = getFilesToProcess()
+    # filenames = [os.path.basename(files[x]) for x in range(0, len(files))]
 
     chronoFullBatch = Chronometer("Full batch")
 
