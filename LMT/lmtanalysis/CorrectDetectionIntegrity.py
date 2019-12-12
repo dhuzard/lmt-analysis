@@ -12,7 +12,7 @@ of an animal from time to time. This script assumes that all animals should be d
 
 WARNING: 
 This script alters the lmtanalysis:
-After running this script, all detections at which all identities are not recognized will be switched to anonymous !
+After running this script, ALL detections at which all identities are not recognized will be switched to ANONYMOUS !
 """
 
 import sqlite3
@@ -99,7 +99,7 @@ def correct(connection, tmin=None, tmax=None):
             validDetectionTimeLineDictionnary[t] = True
     # The 'validDetectionTimeLineDictionnary' contains all the times when the detection is valid!
 
-    """ Rebuild detection set """
+    ### Rebuild detection set
     cursor = connection.cursor()
     for idAnimal in detectionTimeLine.keys():
         for t in range(tmin, tmax + 1):

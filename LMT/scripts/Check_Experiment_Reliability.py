@@ -101,10 +101,11 @@ if __name__ == '__main__':
         print("Experiment duration based on frames: {} frames".format(durationExp))
 
         nbOmittedFrames = realDurationInSeconds * oneSecond - nbFramesRecorded
-        print("Number of frames omitted: {} ({} % of the total experiment duration)".format(
-            nbOmittedFrames,100 * nbOmittedFrames / (realDurationInSeconds * oneSecond)))
-        text_file.write("Number of frames omitted: {} ({} % of the total experiment duration)\n".format(
-            nbOmittedFrames, 100 * nbOmittedFrames / (realDurationInSeconds * oneSecond)))
+        print(f"Number of frames omitted: {nbOmittedFrames} "
+              f"({100 * nbOmittedFrames / (realDurationInSeconds * oneSecond)} % of the total experiment duration)")
+        text_file.write(f"Number of frames omitted: {nbOmittedFrames} "
+                        f"({100 * nbOmittedFrames / (realDurationInSeconds * oneSecond)} % of the total "
+                        f"experiment duration)\n")
         text_file.write("\n")
 
         print("##############################################################")
