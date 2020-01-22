@@ -101,12 +101,14 @@ if __name__ == '__main__':
     # timeBinsDuration = 60*oneMinute  # Enter the timebine (something like 'oneHour * 2' or 'oneMinute * 10')
     ####################################################################################
 
-    nbTimebins = int((stop - start) / timeBinsDuration)
-    print(f"There are {nbTimebins} timebins of {timeBinsDuration} frames (= {timeBinsDuration/30/60} minutes) "
-          f"between frames: Start={start} and Stop={stop}].")
+            nbTimebins = int((stop[filename] - start[filename]) / timeBinsDuration)
+            print(f"There are {nbTimebins} timebins of {timeBinsDuration} frames (= {timeBinsDuration/30/60} minutes) "
+                  f"between frames: Start={start} and Stop={stop}].")
 
+    count = 0
     for file in files:
-        print(f"The file name is: {file.title()}")
+        print(f"The file path is: {file.title()}")
+        print(f"The file name is: {filenames[count]}")
         connection = sqlite3.connect(file)  # connect to database
         animalPool = AnimalPool()  # create an animalPool, which basically contains your animals
         animalPool.loadAnimals(connection)  # load infos about the animals
@@ -186,7 +188,7 @@ if __name__ == '__main__':
         listOfBehInfosDico = []
 
         for bin in range(nbTimebins):
-            startBin = start + bin * timeBinsDuration
+            startBin = start[filenames[count]] + bin * timeBinsDuration
             stopBin = startBin + timeBinsDuration
             print(f"************* Loading data for bin #{bin} *************")
             now = datetime.datetime.now()
@@ -363,8 +365,9 @@ if __name__ == '__main__':
 
                 listOfBehInfosDico.append(dfOfBehInfosTemp)
                 # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+        count += 1
 
         dfOfBehInfos.to_csv(filename)
 
-        # Say it's done !
-        print("!!! End of analysis !!!")
+    # Say it's done !
+    print("!!! End of analysis !!!")
