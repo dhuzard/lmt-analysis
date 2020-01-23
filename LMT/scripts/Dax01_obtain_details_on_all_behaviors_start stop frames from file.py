@@ -83,39 +83,54 @@ if __name__ == '__main__':
     print(f"{files} => {filenames}")
 
     ### DEFINE CONSTANTS ###
-    start = {}
-    stop = {}
+    # start = {}
+    # stop = {}
     timeBinsDuration = int(input("Enter the TIMEBIN for ALL the files (1min =  1800 frames / 1h = 108000 frames):"))
 
     if len(files) == 0:
         print("NO FILE TO PROCESS !!!!!")
-    if len(files) >= 1:
-        for filename in filenames:
-            start[filename] = int(input(f"Enter the STARTING frame for {filename}:"))
-            stop[filename] = int(input(f"Enter the ENDING frame for {filename}:"))
-        # filename = input("Enter the filename for the .csv")
+    # if len(files) >= 1:
+        # for filename in filenames:
+        #     start[filename] = int(input(f"Enter the STARTING frame for {filename}:"))
+        #     stop[filename] = int(input(f"Enter the ENDING frame for {filename}:"))
+        # # filename = input("Enter the filename for the .csv")
+        #
+        #     nbTimebins = int((stop[filename] - start[filename]) / timeBinsDuration)
+        #     print(f"There are {nbTimebins} timebins of {timeBinsDuration} frames (= {timeBinsDuration/30/60} minutes) "
+        #           f"between frames: Start={start[filename]} and Stop={stop[filename]}].")
 
-
-    # start = 1073619  # Enter a frame to start Analysis from (or something like 'oneHour * 1')
-    # stop = 4961593  # Enter a frame or something like 'oneHour * 2'
-    # timeBinsDuration = 60*oneMinute  # Enter the timebine (something like 'oneHour * 2' or 'oneMinute * 10')
-    ####################################################################################
-
-            nbTimebins = int((stop[filename] - start[filename]) / timeBinsDuration)
-            print(f"There are {nbTimebins} timebins of {timeBinsDuration} frames (= {timeBinsDuration/30/60} minutes) "
-                  f"between frames: Start={start} and Stop={stop}].")
+    timingInFrames = open("start-times-data-extraction_in-frames.txt", "r")  # OPEN the txt file with start and stop frames
+    lines = timingInFrames.readlines()  # Call the lines of the file with lines[x]
 
     count = 0
+    countLines = 0
+
     for file in files:
+        print("******")
         print(f"The current Count is : {count}")
         print(f"The file path is: {file.title()}")
-        print(f"The file name is: {filenames[count]}")
+        filename = filenames[count]
+        print(f"The file name is: {filename}")
         connection = sqlite3.connect(file)  # connect to database
         animalPool = AnimalPool()  # create an animalPool, which basically contains your animals
         animalPool.loadAnimals(connection)  # load infos about the animals
 
         animalNumber = animalPool.getNbAnimals()
         print(f"There are {animalNumber} animals.")
+
+        countLines += 1
+        print(f"CountLines={countLines}")
+        start = [int(s) for s in lines[countLines].split() if s.isdigit()][0]
+        print(f"Start frame is {start}")
+        countLines += 1
+        print(f"CountLines={countLines}")
+        stop = [int(s) for s in lines[countLines].split() if s.isdigit()][0]
+        print(f"Start frame is {stop}")
+        countLines += 1
+
+        nbTimebins = int((stop - start) / timeBinsDuration)
+        print(f"There are {nbTimebins} timebins of {timeBinsDuration} frames (= {timeBinsDuration / 30 / 60} minutes) "
+              f"between frames: Start={start} and Stop={stop}].")
 
         if animalNumber >= 1:
             behavioralEventsForOneAnimal = ["Move", "Move isolated", "Rearing", "Rear isolated",
@@ -189,7 +204,7 @@ if __name__ == '__main__':
         listOfBehInfosDico = []
 
         for bin in range(nbTimebins):
-            startBin = start[filenames[count]] + bin * timeBinsDuration
+            startBin = start + bin * timeBinsDuration
             stopBin = startBin + timeBinsDuration
             print(f"************* Loading data for bin #{bin} *************")
             now = datetime.datetime.now()
