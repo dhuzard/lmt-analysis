@@ -80,7 +80,9 @@ def computeBehaviorsData(behavior, show=False):
 if __name__ == '__main__':
     files = getFilesToProcess()
     filenames = [os.path.basename(files[x]) for x in range(0, len(files))]
-    print(f"{files} => {filenames}")
+
+    for numFile in range(0, len(files)):
+        print(f"{files[numFile]} => {filenames[numFile]}")
 
     ### DEFINE CONSTANTS ###
     # start = {}
@@ -99,7 +101,7 @@ if __name__ == '__main__':
         #     print(f"There are {nbTimebins} timebins of {timeBinsDuration} frames (= {timeBinsDuration/30/60} minutes) "
         #           f"between frames: Start={start[filename]} and Stop={stop[filename]}].")
 
-    timingInFrames = open("start-times-data-extraction_in-frames.txt", "r")  # OPEN the txt file with start and stop frames
+    timingInFrames = open("start-times-data-extraction_in-frames - Cages 4,7,10,11.txt", "r")  # OPEN the txt file with start and stop frames
     lines = timingInFrames.readlines()  # Call the lines of the file with lines[x]
 
     count = 0
@@ -227,11 +229,10 @@ if __name__ == '__main__':
                     for a in animalPool.getAnimalsDictionnary():
                         eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=startBin, maxFrame=stopBin)
                         behavioralList1.append(eventTimeLine)
-                        behavioralList1.append(animalPool.getAnimalWithId(a).RFID)
-                         # print(animalPool.getAnimalWithId(a).RFID)
+                        # behavioralList1.append(animalPool.getAnimalWithId(a).RFID)
+                        # print(animalPool.getAnimalWithId(a).RFID)
 
-                        # List of Behavioral dictionaries with the different timebins:
-                        listOfBehDicos.extend(behavioralList1)
+                        listOfBehDicos.extend(behavioralList1)  # List of Behavioral dictionaries with the different timebins
 
                         behavioralData = computeBehaviorsData(eventTimeLine)
                         dicoOfBehInfos.update(behavioralData)
@@ -241,8 +242,7 @@ if __name__ == '__main__':
                         dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
                         dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-                        # List of Behavioral infos with the different timebins:
-                        listOfBehInfos[bin].extend(behavioralData.items())
+                        listOfBehInfos[bin].extend(behavioralData.items())  # List of Behavioral infos with the different timebins
 
                     # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
 
@@ -259,18 +259,10 @@ if __name__ == '__main__':
 
                     for a in animalPool.getAnimalsDictionnary():
                         if behavior == "Move in contact" or behavior == "Rear in contact":  # Just idA in those behaviors
-                            eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=startBin, maxFrame=stopBin)
-                            behavioralList2.append(eventTimeLine)
-                            behavioralList2.append(animalPool.getAnimalWithId(a).RFID)
-                            continue
-                        for b in animalPool.getAnimalsDictionnary():
-                            if a == b:
-                                continue
-                            eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b,
+                            eventTimeLine = EventTimeLine(connection, behavior, idA=a,
                                                           minFrame=startBin, maxFrame=stopBin)
                             behavioralList2.append(eventTimeLine)
-
-                            # List of Behavioral dicos with the different timebins:
+                            # behavioralList2.append(animalPool.getAnimalWithId(a).RFID)
                             listOfBehDicos.extend(behavioralList2)
 
                             behavioralData = computeBehaviorsData(eventTimeLine)
@@ -281,15 +273,31 @@ if __name__ == '__main__':
                             dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
                             dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-                            # List of Behavioral infos with the different timebins:
-                            listOfBehInfos[bin].extend(behavioralData.items())
+                            listOfBehInfos[bin].extend(behavioralData.items())  # List of Behavioral infos with the different timebins
 
-                    # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
+                        else:
+                            for b in animalPool.getAnimalsDictionnary():
+                                if a == b:
+                                    continue
+                                eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b,
+                                                              minFrame=startBin, maxFrame=stopBin)
+                                behavioralList2.append(eventTimeLine)
+                                # behavioralList2.append(animalPool.getAnimalWithId(a).RFID)
+
+                                listOfBehDicos.extend(behavioralList2)  # List of Behavioral dicos with the different timebins
+
+                                behavioralData = computeBehaviorsData(eventTimeLine)
+                                dicoOfBehInfos.update(behavioralData)
+
+                                # Creates a dataFrame with the behavioral Infos from the dictionary:
+                                index = [0]
+                                dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
+                                dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+
+                                listOfBehInfos[bin].extend(behavioralData.items())  # List of Behavioral infos with the different timebins
 
                     allBehaviorsDico[behavior] = behavioralList2
-
-            listOfBehInfosDico.append(dfOfBehInfosTemp)
-            # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+                    listOfBehInfosDico.append(dfOfBehInfosTemp)
 
             #### FOR 3+ ANIMALS ####
             if animalNumber >= 3:
@@ -302,38 +310,46 @@ if __name__ == '__main__':
                         if behavior == "Group 3 make" or behavior == "Group 3 break":
                             eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=startBin, maxFrame=stopBin)
                             behavioralList3.append(eventTimeLine)
-                            behavioralList3.append(animalPool.getAnimalWithId(a).RFID)
-                            continue
-                        for b in animalPool.getAnimalsDictionnary():
-                            if a == b:
-                                continue
-                            for c in animalPool.getAnimalsDictionnary():
-                                if a == c or b == c:
+                            # behavioralList3.append(animalPool.getAnimalWithId(a).RFID)
+
+                            listOfBehDicos.extend(behavioralList3) # List of Behavioral dicos with the different timebins
+
+                            behavioralData = computeBehaviorsData(eventTimeLine)
+                            dicoOfBehInfos.update(behavioralData)
+
+                            # Creates a dataFrame with the behavioral Infos from the dictionary:
+                            index = [0]
+                            dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
+                            dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+
+                            listOfBehInfos[bin].extend(behavioralData.items())  # listOfBehInfos[bin].extend(behavioralData.items())
+
+                        else:
+                            for b in animalPool.getAnimalsDictionnary():
+                                if a == b:
                                     continue
-                                eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b, idC=c,
-                                                              minFrame=startBin, maxFrame=stopBin)
-                                behavioralList3.append(eventTimeLine)
+                                for c in animalPool.getAnimalsDictionnary():
+                                    if a == c or b == c:
+                                        continue
+                                    eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b, idC=c,
+                                                                  minFrame=startBin, maxFrame=stopBin)
+                                    behavioralList3.append(eventTimeLine)
 
-                                # List of Behavioral dicos with the different timebins:
-                                listOfBehDicos.extend(behavioralList3)
+                                    listOfBehDicos.extend(behavioralList3)  # List of Behavioral dicos with the different timebins
 
-                                behavioralData = computeBehaviorsData(eventTimeLine)
-                                dicoOfBehInfos.update(behavioralData)
+                                    behavioralData = computeBehaviorsData(eventTimeLine)
+                                    dicoOfBehInfos.update(behavioralData)
 
-                                # Creates a dataFrame with the behavioral Infos from the dictionary:
-                                index = [0]
-                                dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
-                                dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+                                    # Creates a dataFrame with the behavioral Infos from the dictionary:
+                                    index = [0]
+                                    dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
+                                    dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-                                # List of Behavioral infos with the different timebins:
-                                listOfBehInfos[bin].extend(behavioralData.items())
+                                    listOfBehInfos[bin].extend(behavioralData.items())  # List of Behavioral infos with the different timebins
 
-                # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
-
-                allBehaviorsDico[behavior] = behavioralList3
-
-                listOfBehInfosDico.append(dfOfBehInfosTemp)
-                # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+                    allBehaviorsDico[behavior] = behavioralList3
+                    listOfBehInfosDico.append(dfOfBehInfosTemp)
+                    # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
             #### FOR 4 ANIMALS ####
             if animalNumber >= 4:
@@ -346,44 +362,53 @@ if __name__ == '__main__':
                         if behavior == "Group 4 make" or behavior == "Group 4 break":
                             eventTimeLine = EventTimeLine(connection, behavior, idA=a, minFrame=startBin, maxFrame=stopBin)
                             behavioralList4.append(eventTimeLine)
-                            behavioralList4.append(animalPool.getAnimalWithId(a).RFID)
-                            continue
-                        for b in animalPool.getAnimalsDictionnary():
-                            if a == b:
-                                continue
-                            for c in animalPool.getAnimalsDictionnary():
-                                if a == c or b == c:
+                            # behavioralList4.append(animalPool.getAnimalWithId(a).RFID)
+
+                            listOfBehDicos.extend(behavioralList4) # List of Behavioral dicos with the different timebins
+
+                            behavioralData = computeBehaviorsData(eventTimeLine)
+                            dicoOfBehInfos.update(behavioralData)
+
+                            # Creates a dataFrame with the behavioral Infos from the dictionary:
+                            index = [0]
+                            dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
+                            dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+
+                            listOfBehInfos[bin].extend(behavioralData.items())  # List of Behavioral infos with the different timebins
+                        else:
+                            for b in animalPool.getAnimalsDictionnary():
+                                if a == b:
                                     continue
-                                for d in animalPool.getAnimalsDictionnary():
-                                    if a == d or b == d or c == d:
+                                for c in animalPool.getAnimalsDictionnary():
+                                    if a == c or b == c:
                                         continue
-                                    eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b, idC=c, idD=d,
-                                                                  minFrame=startBin, maxFrame=stopBin)
-                                    behavioralList4.append(eventTimeLine)
+                                    for d in animalPool.getAnimalsDictionnary():
+                                        if a == d or b == d or c == d:
+                                            continue
+                                        eventTimeLine = EventTimeLine(connection, behavior, idA=a, idB=b, idC=c, idD=d,
+                                                                      minFrame=startBin, maxFrame=stopBin)
+                                        behavioralList4.append(eventTimeLine)
 
-                                    # List of Behavioral dicos with the different timebins:
-                                    listOfBehDicos.extend(behavioralList4)
+                                        listOfBehDicos.extend(behavioralList4)  # List of Behavioral dicos with the different timebins:
 
-                                    behavioralData = computeBehaviorsData(eventTimeLine)
-                                    dicoOfBehInfos.update(behavioralData)
+                                        behavioralData = computeBehaviorsData(eventTimeLine)
+                                        dicoOfBehInfos.update(behavioralData)
 
-                                    # Creates a dataFrame with the behavioral Infos from the dictionary:
-                                    index = [0]
-                                    dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
-                                    dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+                                        # Creates a dataFrame with the behavioral Infos from the dictionary:
+                                        index = [0]
+                                        dfOfBehInfosTemp = pd.DataFrame(dicoOfBehInfos, index=index)
+                                        dfOfBehInfos = dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
 
-                                    # List of Behavioral infos with the different timebins:
-                                    listOfBehInfos[bin].extend(behavioralData.items())
+                                        listOfBehInfos[bin].extend(behavioralData.items())  # List of Behavioral infos with the different timebins
 
-                # plotMultipleTimeLine(behavioralList, title=behavior+" / timebin #"+str(bin), minValue=start)
+                    allBehaviorsDico[behavior] = behavioralList4
 
-                allBehaviorsDico[behavior] = behavioralList4
-
-                listOfBehInfosDico.append(dfOfBehInfosTemp)
-                # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
+                    listOfBehInfosDico.append(dfOfBehInfosTemp)
+                    # dfOfBehInfos.append(dfOfBehInfosTemp, ignore_index=True)
         count += 1
 
         dfOfBehInfos.to_csv(f"{filename}.csv")
+        print("CSV File Created !")
 
     # Say it's done !
     print("!!! End of analysis !!!")
